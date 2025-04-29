@@ -56,13 +56,13 @@
                 </div>
                 <div class="form-group">
                     <label for="profilePhone">Телефон:</label>
-                    <input type="phone" id="userEmailDisplay" >
+                    <input type="phone" id="profilePhone" >
                 </div>
                 <div class="form-group">
                     <label for="profilePassword">Новый пароль:</label>
                     <input type="password" id="userPasswordDisplay" >
                 </div>
-                <button type="submitBtn" id="saveProfileBtn">Сохранить изменения</button>
+                <button type="submit" id="saveProfileBtn">Сохранить изменения</button>
             </form>
             <button id="logoutBtn">Выйти</button>
         </div>
@@ -121,134 +121,138 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            var loginModal = document.getElementById("loginModal");
-            var openLoginBtn = document.getElementById("openLoginBtn");
-            var closeButtons = document.getElementsByClassName("close");
-            var loginForm = document.getElementById("loginForm");
-            var userProfile = document.getElementById("userProfile");
-            var userNameDisplay = document.getElementById("profileUsername");
-            var logoutBtn = document.getElementById("logoutBtn");
+       document.addEventListener('DOMContentLoaded', (event) => {
+    const loginModal = document.getElementById("loginModal");
+    const openLoginBtn = document.getElementById("openLoginBtn");
+    const closeButtons = document.getElementsByClassName("close");
+    const loginForm = document.getElementById("loginForm");
+    const userProfile = document.getElementById("userProfile");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-            // Открытие модального окна авторизации при клике на иконку профиля
-            document.getElementById("openLoginBtn").addEventListener("click", function (event) {
-            event.preventDefault();
+    // Проверка сессии при загрузке страницы
+    console.log("Проверка сессии при загрузке страницы...");
+    checkSession();
 
-            const savedUser = localStorage.getItem("loggedUser");
-            checkSession()
+    openLoginBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        console.log("Кнопка входа нажата.");
+        checkSession();
+    });
+
+    for (let i = 0; i < closeButtons.length; i++) {
+        closeButtons[i].onclick = function () {
+            console.log("Закрытие окна...");
+            loginModal.style.display = "none";
+            userProfile.style.display = "none";
+        };
+    }
+
+    window.onclick = function (event) {
+        if (event.target === loginModal) {
+            console.log("Нажали на модальное окно...");
+            loginModal.style.display = "none";
+            userProfile.style.display = "none";
+        }
+    };
+
+    loginForm.onsubmit = async function (event) {
+        event.preventDefault();
+        console.log("Попытка авторизации...");
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        const response = await fetch('http://localhost:3000/api/login', {
+            method: 'POST',
+            credentials: 'include', // 🔑 Критично для куки!
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
         });
 
-            // Закрытие модального окна авторизации
-            for (var i = 0; i < closeButtons.length; i++) {
-                closeButtons[i].onclick = function() {
-                    loginModal.style.display = "none"; // Закрываем модальное окно
-                    userProfile.style.display = "none"; // Закрываем профиль
-                };
-            }
+        const data = await response.json();
+        console.log("Ответ от сервера:", data);
 
-            // Закрытие модального окна при клике вне окна
-            window.onclick = function(event) {
-                if (event.target == loginModal) {
-                    loginModal.style.display = "none";
-                    userProfile.style.display = "none"; // Закрываем профиль
-                }
-            };
+        if (data.success) {
+            loginModal.style.display = "none";  // Закрыть окно авторизации
+            userProfile.style.display = "block";  // Показать профиль
+            fillProfileForm(data.user);  // Заполнить форму данными
 
-            // Обработка формы входа
-            loginForm.onsubmit = async function(event) {
-    event.preventDefault();
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
+            // Сохраняем данные пользователя в localStorage
+            localStorage.setItem("loggedIn", "true");
+            localStorage.setItem("user", JSON.stringify(data.user));
+        } else {
+            alert('Ошибка при авторизации');
+        }
+    };
 
-    const response = await fetch('http://localhost:3000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-    });
-
-    const data = await response.json();
-    if (data.success) {
-        loginModal.style.display = "none"; // Закрыть окно авторизации
-        userProfile.style.display = "block"; // Показать профиль
-        loadProfileData(); // Загрузить данные профиля
-    } else {
-        alert('Ошибка при авторизации');
-    }
-};
-
-// Функция для загрузки данных профиля после авторизации
-async function loadProfileData() {
-    const response = await fetch('http://localhost:3000/api/getProfile', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-        // Заполняем форму данными
-        document.getElementById("userFirstNameDisplay").value = data.user.firstName;
-        document.getElementById("userLastNameDisplay").value = data.user.lastName;
-        document.getElementById("userNameDisplay").value = data.user.username;
-        document.getElementById("userEmailDisplay").value = data.user.email;
-        document.getElementById("userPasswordDisplay").value = data.user.password; // Пароль скрыт, но если нужно отображать, уберите это
-    } else {
-        alert('Ошибка загрузки данных профиля');
-    }
-}
-// Обработчик кнопки сохранения изменений
-document.getElementById("saveProfileBtn").onclick = async function(event) {
-    event.preventDefault();
-
-    // Собираем данные из формы
-    const firstName = document.getElementById("userFirstNameDisplay").value.trim();
-    const lastName = document.getElementById("userLastNameDisplay").value.trim();
-    const username = document.getElementById("userNameDisplay").value.trim();
-    const email = document.getElementById("userEmailDisplay").value.trim();
-    const password = document.getElementById("userPasswordDisplay").value.trim();
-
-    // Проверка на пустые поля (при необходимости)
-    if (!firstName || !lastName || !username || !email) {
-        alert("Пожалуйста, заполните все поля.");
-        return;
-    }
-
-    // Отправляем данные на сервер
-    const response = await fetch('http://localhost:3000/api/updateProfile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName, lastName, username, email, password })
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-        alert("Профиль обновлен успешно!");
-    } else {
-        alert("Ошибка при обновлении профиля.");
-    }
-};
-            // Выход из аккаунта
-            logoutBtn.onclick = function() {
-                userProfile.style.display = "none"; // Скрыть профиль
-                alert("Вы вышли из аккаунта");
-            };
-
+    logoutBtn.onclick = async function () {
+        console.log("Выход из аккаунта...");
+        await fetch('http://localhost:3000/api/logout', {
+            method: 'POST',
+            credentials: 'include' // Отправка куки с запросом
         });
-        async function checkSession() {
-  const response = await fetch('http://localhost:3000/api/session');
-  const data = await response.json();
 
-  if (data.loggedIn) {
-    userProfile.style.display = "block";
-    loginModal.style.display = "none";
-    // можно загрузить данные в поля профиля:
-    fillProfileForm(data.user);
-  } else {
-    loginModal.style.display = "block";
-    userProfile.style.display = "none";
-  }
-}
+        localStorage.setItem("loggedIn", "false");
+        localStorage.removeItem("user");
+
+        userProfile.style.display = "none";  // Скрыть профиль
+        loginModal.style.display = "block";  // Показать окно авторизации
+        alert("Вы вышли из аккаунта");
+    };
+
+    document.getElementById("saveProfileBtn").onclick = async function (event) {
+        event.preventDefault();
+
+        console.log("Сохранение изменений профиля...");
+        const firstName = document.getElementById("userFirstNameDisplay").value.trim();
+        const lastName = document.getElementById("userLastNameDisplay").value.trim();
+        const username = document.getElementById("userNameDisplay").value.trim();
+        const email = document.getElementById("userEmailDisplay").value.trim();
+        const password = document.getElementById("userPasswordDisplay").value.trim();
+
+        const response = await fetch('http://localhost:3000/api/updateProfile', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ firstName, lastName, username, email, password })
+        });
+
+        const data = await response.json();
+        console.log("Ответ от сервера при обновлении профиля:", data);
+
+        if (data.success) {
+            alert("Профиль обновлен успешно!");
+        } else {
+            alert("Ошибка при обновлении профиля.");
+        }
+    };
+
+    async function checkSession() {
+        console.log("Проверка сессии при загрузке страницы...");
+
+        // Проверка в localStorage, если пользователь уже авторизован
+        const loggedIn = localStorage.getItem("loggedIn");
+        const user = localStorage.getItem("user");
+
+        if (loggedIn === "true" && user) {
+            console.log("✅ Пользователь уже авторизован:", JSON.parse(user));
+            userProfile.style.display = "block";  // Показать профиль
+            loginModal.style.display = "none";  // Скрыть окно авторизации
+            fillProfileForm(JSON.parse(user));  // Заполнить форму данными пользователя
+        } else {
+            console.log("🔒 Пользователь не авторизован");
+            loginModal.style.display = "block";  // Показать окно авторизации
+            userProfile.style.display = "none";  // Скрыть профиль
+        }
+    }
+
+    function fillProfileForm(user) {
+        document.getElementById("userFirstNameDisplay").value = user.firstName || '';
+        document.getElementById("userLastNameDisplay").value = user.lastName || '';
+        document.getElementById("userNameDisplay").value = user.username || '';
+        document.getElementById("userEmailDisplay").value = user.email || '';
+        document.getElementById("userPasswordDisplay").value = user.password || '';
+    }
+});
     </script>
 </body>
 </html>

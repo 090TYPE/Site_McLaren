@@ -5,14 +5,21 @@ const port = 3000;
 const cors = require('cors');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
-const { user } = require('./userSession');
+
+app.use(cors({
+  origin: 'http://127.0.0.1:5500', // Тот адрес, откуда ты открываешь HTML-файл
+  credentials: true               // ВАЖНО: разрешить отправку куки
+}));
+
 const session = require('express-session');
 app.use(session({
   secret: 'mclaren_secret_key',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false } // если у тебя нет HTTPS, оставь secure: false
+  cookie: {
+    secure: false, // true — только по HTTPS
+    sameSite: 'lax' // обязательно указать, чтобы работало на кросс-домене
+  }
 }));
 // Настройка конфигурации для подключения к БД с использованием Windows Authentication
 const sqlConfig = {
@@ -73,7 +80,7 @@ app.get('/api/getProfile', async (req, res) => {
       const pool = app.locals.db;
 
       // Используем текущего пользователя для получения его данных из БД
-      const userId = user.id;  // Используем ID из сессии
+      const userId = req.session.user?.id;  // Используем ID из сессии
 
       if (!userId) {
           return res.json({ success: false, message: 'Пользователь не авторизован' });
@@ -112,7 +119,7 @@ app.post('/api/updateProfile', async (req, res) => {
       const pool = app.locals.db;
 
       // Используем текущего пользователя для обновления его данных
-      const userId = user.id;  // Получаем id текущего пользователя
+      const userId = req.session.user?.id;  // Получаем id текущего пользователя
 
       if (!userId) {
           return res.json({ success: false, message: 'Пользователь не авторизован' });
@@ -168,15 +175,18 @@ app.post('/api/login', async (req, res) => {
     if (employee.recordset.length > 0) {
       const emp = employee.recordset[0];
 
-      // Обновляем переменные
-      user.id = emp.EmployeeID;
-      user.firstName = emp.FirstName;
-      user.lastName = emp.LastName;
-      user.username = emp.UserName;
-      user.email = emp.Email;
-      user.role = emp.RoleID === 1 ? 'admin' : 'user';
-      user.password=emp.Password;
-      return res.json({ success: true, role: user.role, user });
+      // Сохраняем в сессию
+      req.session.user = {
+        id: emp.EmployeeID,
+        firstName: emp.FirstName,
+        lastName: emp.LastName,
+        username: emp.UserName,
+        email: emp.Email,
+        role: emp.RoleID === 1 ? 'admin' : 'user',
+        password: emp.Password
+      };
+
+      return res.json({ success: true, role: req.session.user.role, user: req.session.user });
     }
 
     // Поиск в Customers
@@ -189,25 +199,20 @@ app.post('/api/login', async (req, res) => {
     if (customer.recordset.length > 0) {
       const cust = customer.recordset[0];
 
-      // Обновляем переменные
-      user.id = cust.CustomerID;
-      user.firstName = cust.FirstName;
-      user.lastName = cust.LastName;
-      user.username = cust.UserName;
-      user.email = cust.Email;
-      user.role = 'user';
+      req.session.user = {
+        id: cust.CustomerID,
+        firstName: cust.FirstName,
+        lastName: cust.LastName,
+        username: cust.UserName,
+        email: cust.Email,
+        role: 'user',
+        password: cust.Password
+      };
 
-      return res.json({ success: true, role: 'user', user });
+      return res.json({ success: true, role: 'user', user: req.session.user });
     }
-    req.session.user = {
-      id: user.id,
-      username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      role: user.role
-    };
-    res.json({ success: false });
+
+    return res.json({ success: false, message: "Неверные данные" });
 
   } catch (err) {
     console.error(err);
@@ -220,4 +225,11 @@ app.get('/api/session', (req, res) => {
   } else {
     res.json({ loggedIn: false });
   }
+});
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) return res.status(500).json({ success: false });
+    res.clearCookie('connect.sid');
+    res.json({ success: true });
+  });
 });
