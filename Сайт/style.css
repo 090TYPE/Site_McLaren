@@ -855,3 +855,127 @@ form button:hover {
   padding: 10px;
   text-align: center;
 }
+
+.mcstore-tables-container {
+  font-family: var(--mcstore-tables-font);
+  background-color: var(--mcstore-tables-bg);
+  color: var(--mcstore-tables-text);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.mcstore-tables-container h2,
+.mcstore-tables-container h3 {
+  color: var(--mcstore-tables-accent);
+  margin-bottom: 15px;
+}
+
+.mcstore-tables-buttons button {
+  margin: 5px 8px 10px 0;
+  padding: 8px 14px;
+  background-color: var(--mcstore-tables-hover);
+  color: var(--mcstore-tables-text);
+  border: 1px solid var(--mcstore-tables-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.mcstore-tables-buttons button:hover {
+  background-color: #262626;
+  transform: scale(1.03);
+}
+
+.mcstore-tables-data table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #111;
+  color: var(--mcstore-tables-text);
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.mcstore-tables-data th {
+  padding: 12px;
+  background-color: var(--mcstore-tables-header-bg);
+  border: 1px solid var(--mcstore-tables-border);
+  text-align: left;
+  color: #ffffff;
+}
+
+.mcstore-tables-data td {
+  padding: 10px;
+  border: 1px solid var(--mcstore-tables-border);
+  background-color: var(--mcstore-tables-bg);
+}
+
+.mcstore-tables-data tr:nth-child(even) td {
+  background-color: var(--mcstore-tables-row-alt);
+}
+
+.mcstore-tables-data input {
+  width: 100%;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  border: 1px solid var(--mcstore-tables-border);
+  border-radius: 4px;
+  padding: 5px 8px;
+}
+
+.mcstore-tables-data input:focus {
+  outline: none;
+  border-color: var(--mcstore-tables-accent);
+  background-color: #222;
+}
+
+.mcstore-tables-data img {
+  max-width: 100px;
+  border-radius: 4px;
+  border: 1px solid var(--mcstore-tables-border);
+}
+button.menu-button {
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button.menu-button:hover {
+  background-color: #555;
+}
+
+/* Панели с контентом */
+.panel {
+  display: none;
+  margin-top: 20px;
+}
+
+.panel h2 {
+  color: #333;
+}
+
+.panel form input[type="text"], .panel form input[type="number"], .panel form input[type="file"], .panel form button {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 400px;
+  margin: 10px 0;
+}
+
+.panel form button[type="submit"] {
+  background-color: #28a745;
+  color: white;
+}
+
+.panel form button[type="submit"]:hover {
+  background-color: #218838;
+}
+
+/* Скрытые элементы по умолчанию */
+.hidden {
+  display: none;
+}

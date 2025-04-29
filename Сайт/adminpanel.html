@@ -8,67 +8,58 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-  <div id="adminPanel">
-    <header>
-      <h1>Админ панель</h1>
-      <nav>
-        <button onclick="loadCarsToTable()">Загрузить машины</button>
-        <button onclick="showAddCarForm()">Добавить машину</button>
-      </nav>
-    </header>
+    <div id="adminPanel">
+        <h1>Панель администратора</h1>
+    
+        <!-- Меню -->
+        <nav>
+          <button class="menu-button" onclick="togglePanel('addCarPanel')">Добавить машину</button>
+          <button class="menu-button" onclick="togglePanel('reportPanel')">Отчёт</button>
+          <button class="menu-button" onclick="togglePanel('mcstore-tables-container')">База данных</button>
+        </nav>
 
-    <div id="carList" class="hidden">
-        <h2>Список машин</h2>
-        <table id="carsTable">
-          <thead>
-            <tr>
-              <th>Фото</th>
-              <th>Модель</th>
-              <th>Год</th>
-              <th>Цвет</th>
-              <th>Цена</th>
-              <th>Двигатель</th>
-              <th>Трансмиссия</th>
-            </tr>
-          </thead>
-          <tbody id="carTableBody">
-            <!-- Здесь будет загружаться список машин -->
-          </tbody>
-        </table>
-      </div>
+        <!-- Панели -->
+        <div id="addCarPanel" class="hidden">
+          <h2>Добавить машину</h2>
+          <form id="addCarFormElement">
+            <label for="model">Модель:</label>
+            <input type="text" id="model" required><br>
 
-    <div id="addCarForm" class="hidden">
-      <h2>Добавить машину</h2>
-      <form id="addCarFormElement">
-        <label for="model">Модель:</label>
-        <input type="text" id="model" required><br>
+            <label for="year">Год:</label>
+            <input type="number" id="year" required><br>
 
-        <label for="year">Год:</label>
-        <input type="number" id="year" required><br>
+            <label for="color">Цвет:</label>
+            <input type="text" id="color" required><br>
 
-        <label for="color">Цвет:</label>
-        <input type="text" id="color" required><br>
+            <label for="price">Цена:</label>
+            <input type="number" id="price" required><br>
 
-        <label for="price">Цена:</label>
-        <input type="number" id="price" required><br>
+            <label for="engineType">Тип двигателя:</label>
+            <input type="text" id="engineType" required><br>
 
-        <label for="engineType">Тип двигателя:</label>
-        <input type="text" id="engineType" required><br>
+            <label for="transmission">Трансмиссия:</label>
+            <input type="text" id="transmission" required><br>
 
-        <label for="transmission">Трансмиссия:</label>
-        <input type="text" id="transmission" required><br>
+            <label for="image">Изображение:</label>
+            <input type="file" id="image" required><br>
 
-        <label for="image">Изображение:</label>
-        <input type="file" id="image" required><br>
+            <button type="submit">Добавить машину</button>
+          </form>
+        </div>
 
-        <button type="submit">Добавить машину</button>
-      </form>
+        <!-- Таблицы базы данных (сейчас скрыта) -->
+        <div id="mcstore-tables-container" class="hidden">
+          <h2>Таблицы базы данных</h2>
+          <div id="tableButtons" class="mcstore-tables-buttons"></div>
+          <hr />
+          <div id="tableData" class="mcstore-tables-data"></div>
+        </div>
+
+        <div id="reportPanel" class="hidden">
+          <h2>Отчёт</h2>
+          <p>Здесь будет ваш отчёт...</p>
+        </div>
     </div>
-  </div>
-  <h2>Таблицы базы данных</h2>
-  <div id="tableButtons"></div>
-  <hr />
-  <div id="tableData"></div>
   <script>
     // Загрузка списка машин
     async function loadCarsToTable() {
@@ -215,7 +206,18 @@ async function updateCell(table, id, idColumn, col, value) {
   const result = await res.json();
   if (!result.success) alert("Ошибка при обновлении");
 }
-
+function togglePanel(panelId) {
+      const panel = document.getElementById(panelId);
+      
+      // Проверяем, скрыта ли панель
+      if (panel.classList.contains('hidden')) {
+        // Если скрыта - показываем
+        panel.classList.remove('hidden');
+      } else {
+        // Если видна - скрываем
+        panel.classList.add('hidden');
+      }
+    }
 fetchTables();
   </script>
 </body>
