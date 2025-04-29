@@ -1,8 +1,12 @@
 const express = require('express');
 const mssql = require('mssql');
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 const port = 3000;
 const cors = require('cors');
+const upload = multer();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -55,7 +59,7 @@ app.get('/api/cars', async (req, res) => {
   try {
     const result = await app.locals.db
       .request()
-      .query('SELECT * FROM Cars WHERE Available = 1');
+      .query('SELECT * FROM Cars WHERE Available = 1');  // Получение только доступных машин
 
     const cars = result.recordset.map(car => ({
       CarID: car.CarID,
@@ -66,7 +70,7 @@ app.get('/api/cars', async (req, res) => {
       EngineType: car.EngineType,
       Transmission: car.Transmission,
       Available: car.Available,
-      Image: car.Image ? Buffer.from(car.Image).toString('base64') : null
+      Image: car.Image ? Buffer.from(car.Image).toString('base64') : null // Преобразование изображения в base64 для отправки на клиент
     }));
 
     res.json(cars);
@@ -220,4 +224,109 @@ app.post('/api/logout', (req, res) => {
     res.clearCookie('connect.sid');
     res.json({ success: true });
   });
+});
+// API для админ-панели
+app.get('/adminPanel.html', (req, res) => {
+  if (req.session.user && req.session.user.role === 'admin') {
+    res.sendFile(path.join(__dirname, 'public', 'adminPanel.html'));
+  } else {
+    res.status(403).send('Доступ запрещен');
+  }
+});
+// API маршрут для добавления нового автомобиля
+app.post('/api/addCar', upload.single('Image'), async (req, res) => {
+  try {
+    // Логируем полученные данные и файл
+    console.log('Received body:', req.body);
+    console.log('Received file:', req.file);
+
+    // Получаем данные из формы
+    const { Model, Year, Color, Price, EngineType, Transmission } = req.body;
+    const imageFile = req.file; // Загруженный файл изображения
+
+    if (!Model || !Year || !Color || !Price || !EngineType || !Transmission || !imageFile) {
+      return res.status(400).json({ success: false, message: 'Все поля должны быть заполнены' });
+    }
+
+    // Преобразуем изображение в бинарный формат
+    const imageBuffer = imageFile.buffer; // .buffer содержит бинарные данные изображения
+
+    // Подключаемся к базе данных
+    const pool = app.locals.db;
+    const request = pool.request();
+
+    // Вставка данных в таблицу Cars
+    await request.input('Model', mssql.VarChar, Model);
+    await request.input('Year', mssql.Int, Year);
+    await request.input('Color', mssql.VarChar, Color);
+    await request.input('Price', mssql.Decimal(18, 2), Price);
+    await request.input('EngineType', mssql.VarChar, EngineType);
+    await request.input('Transmission', mssql.VarChar, Transmission);
+    await request.input('Image', mssql.VarBinary, imageBuffer); // Отправляем изображение как бинарные данные
+
+    const query = `
+      INSERT INTO Cars (Model, Year, Color, Price, EngineType, Transmission,Available, Image)
+      VALUES (@Model, @Year, @Color, @Price, @EngineType, @Transmission,1, @Image)
+    `;
+    await request.query(query);
+
+    res.json({ success: true, message: 'Машина добавлена успешно' });
+  } catch (error) {
+    console.error('Ошибка при добавлении машины:', error);
+    res.status(500).json({ success: false, message: 'Ошибка сервера' });
+  }
+});
+// 🔹 Получить список таблиц
+app.get('/api/tables', async (req, res) => {
+  try {
+    const result = await app.locals.db.request().query(`
+      SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_SCHEMA='dbo'
+    `);
+    res.json(result.recordset.map(row => row.TABLE_NAME));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 🔹 Получить данные из таблицы
+app.get('/api/table/:tableName', async (req, res) => {
+  const { tableName } = req.params;
+  try {
+    const result = await app.locals.db.request().query(`SELECT * FROM [dbo].[${tableName}]`);
+
+    let data = result.recordset;
+
+    // Преобразование картинки, если таблица Cars
+    if (tableName === 'Cars') {
+      data = data.map(car => ({
+        ...car,
+        Image: car.Image ? `data:image/jpeg;base64,${Buffer.from(car.Image).toString('base64')}` : null
+      }));
+    }
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 🔹 Обновить значение в таблице
+app.post('/api/table/:tableName/update', async (req, res) => {
+  const { tableName } = req.params;
+  const { id, column, value, idColumn } = req.body;
+
+  try {
+    const query = `
+      UPDATE [dbo].[${tableName}]
+      SET [${column}] = @value
+      WHERE [${idColumn}] = @id
+    `;
+    const request = app.locals.db.request();
+    request.input('value', value);
+    request.input('id', id);
+    await request.query(query);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });

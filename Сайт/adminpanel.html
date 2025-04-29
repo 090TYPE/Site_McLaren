@@ -1,11 +1,222 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админ панель McLaren Store</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
+  <div id="adminPanel">
+    <header>
+      <h1>Админ панель</h1>
+      <nav>
+        <button onclick="loadCarsToTable()">Загрузить машины</button>
+        <button onclick="showAddCarForm()">Добавить машину</button>
+      </nav>
+    </header>
+
+    <div id="carList" class="hidden">
+        <h2>Список машин</h2>
+        <table id="carsTable">
+          <thead>
+            <tr>
+              <th>Фото</th>
+              <th>Модель</th>
+              <th>Год</th>
+              <th>Цвет</th>
+              <th>Цена</th>
+              <th>Двигатель</th>
+              <th>Трансмиссия</th>
+            </tr>
+          </thead>
+          <tbody id="carTableBody">
+            <!-- Здесь будет загружаться список машин -->
+          </tbody>
+        </table>
+      </div>
+
+    <div id="addCarForm" class="hidden">
+      <h2>Добавить машину</h2>
+      <form id="addCarFormElement">
+        <label for="model">Модель:</label>
+        <input type="text" id="model" required><br>
+
+        <label for="year">Год:</label>
+        <input type="number" id="year" required><br>
+
+        <label for="color">Цвет:</label>
+        <input type="text" id="color" required><br>
+
+        <label for="price">Цена:</label>
+        <input type="number" id="price" required><br>
+
+        <label for="engineType">Тип двигателя:</label>
+        <input type="text" id="engineType" required><br>
+
+        <label for="transmission">Трансмиссия:</label>
+        <input type="text" id="transmission" required><br>
+
+        <label for="image">Изображение:</label>
+        <input type="file" id="image" required><br>
+
+        <button type="submit">Добавить машину</button>
+      </form>
+    </div>
+  </div>
+  <h2>Таблицы базы данных</h2>
+  <div id="tableButtons"></div>
+  <hr />
+  <div id="tableData"></div>
+  <script>
+    // Загрузка списка машин
+    async function loadCarsToTable() {
+        try {
+            const response = await fetch('http://localhost:3000/api/Cars');
+            const cars = await response.json();
+
+            const tableBody = document.getElementById('carTableBody');
+            tableBody.innerHTML = '';
+
+            cars.forEach(car => {
+            const row = document.createElement('tr');
+
+            const imageSrc = car.Image
+                ? `data:image/jpeg;base64,${car.Image}`
+                : 'images/no-image.jpg'; // Замените на путь к заглушке, если изображение отсутствует
+
+            row.innerHTML = `
+                <td><img src="${imageSrc}" alt="${car.Model}" class="car-thumbnail"></td>
+                <td>${car.Model}</td>
+                <td>${car.Year}</td>
+                <td>${car.Color}</td>
+                <td>${car.Price.toLocaleString()} ₽</td>
+                <td>${car.EngineType}</td>
+                <td>${car.Transmission}</td>
+            `;
+
+            tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Ошибка при загрузке машин:', error);
+            document.getElementById('carTableBody').innerHTML = '<tr><td colspan="7">Не удалось загрузить список машин.</td></tr>';
+        }
+    }
+
+    // Показать форму добавления машины
+    function showAddCarForm() {
+      document.getElementById('addCarForm').classList.remove('hidden');
+      document.getElementById('carList').classList.add('hidden');
+    }
+
+    // Добавление машины через форму
+    document.getElementById('addCarFormElement').addEventListener('submit', async (event) => {
+    event.preventDefault();
     
+    const model = document.getElementById('model').value;
+    const year = document.getElementById('year').value;
+    const color = document.getElementById('color').value;
+    const price = document.getElementById('price').value;
+    const engineType = document.getElementById('engineType').value;
+    const transmission = document.getElementById('transmission').value;
+    const image = document.getElementById('image').files[0]; // Загружаемый файл изображения
+
+    const formData = new FormData();
+    formData.append('Model', model);
+    formData.append('Year', year);
+    formData.append('Color', color);
+    formData.append('Price', price);
+    formData.append('EngineType', engineType);
+    formData.append('Transmission', transmission);
+    formData.append('Image', image);
+
+    try {
+      await axios.post('http://localhost:3000/api/addCar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      loadCars();
+      alert('Машина добавлена!');
+    } catch (error) {
+      console.error('Ошибка при добавлении машины:', error);
+    }
+  });
+  
+async function fetchTables() {
+  const res = await fetch(`http://localhost:3000/api/tables`);
+  const tables = await res.json();
+  const div = document.getElementById('tableButtons');
+  div.innerHTML = "";
+  tables.forEach(t => {
+    const btn = document.createElement('button');
+    btn.innerText = t;
+    btn.onclick = () => loadTable(t);
+    div.appendChild(btn);
+  });
+}
+
+async function loadTable(tableName) {
+  const res = await fetch(`http://localhost:3000/api/table/${tableName}`);
+  const rows = await res.json();
+  const div = document.getElementById('tableData');
+  div.innerHTML = `<h3>${tableName}</h3>`;
+
+  if (rows.length === 0) {
+    div.innerHTML += "<p>Нет данных</p>";
+    return;
+  }
+
+  const table = document.createElement('table');
+  table.border = 1;
+
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  const keys = Object.keys(rows[0]);
+  keys.forEach(k => {
+    const th = document.createElement('th');
+    th.textContent = k;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  rows.forEach(row => {
+    const tr = document.createElement('tr');
+    keys.forEach(col => {
+      const td = document.createElement('td');
+      if (col === "Image" && row[col]) {
+        const img = document.createElement('img');
+        img.src = row[col];
+        img.style.width = "100px";
+        td.appendChild(img);
+      } else {
+        const input = document.createElement('input');
+        input.value = row[col];
+        input.onchange = () =>
+          updateCell(tableName, row[keys[0]], keys[0], col, input.value);
+        td.appendChild(input);
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  div.appendChild(table);
+}
+
+async function updateCell(table, id, idColumn, col, value) {
+  const body = { id, idColumn, column: col, value };
+  const res = await fetch(`http://localhost:3000/api/table/${table}/update`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const result = await res.json();
+  if (!result.success) alert("Ошибка при обновлении");
+}
+
+fetchTables();
+  </script>
 </body>
 </html>
