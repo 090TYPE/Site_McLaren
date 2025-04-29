@@ -52,11 +52,15 @@
                 </div>
                 <div class="form-group">
                     <label for="userEmailDisplay">Email:</label>
-                    <input type="email" id="userEmailDisplay" />
+                    <input id="userEmailDisplay" type="email" />
                 </div>
                 <div class="form-group">
                     <label for="profilePhone">Телефон:</label>
-                    <input type="phone" id="profilePhone" >
+                    <input id="userPhoneNumberDisplay" type="text" />
+                </div>
+                <div class="form-group">
+                    <label for="userAdressDisplay">Адресс:</label>
+                    <input id="userAddressDisplay" type="text" />
                 </div>
                 <div class="form-group">
                     <label for="profilePassword">Новый пароль:</label>
@@ -156,33 +160,41 @@
     };
 
     loginForm.onsubmit = async function (event) {
-        event.preventDefault();
-        console.log("Попытка авторизации...");
-        const username = document.getElementById("username").value.trim();
-        const password = document.getElementById("password").value.trim();
+    event.preventDefault();
+    console.log("Попытка авторизации...");
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-        const response = await fetch('http://localhost:3000/api/login', {
-            method: 'POST',
-            credentials: 'include', // 🔑 Критично для куки!
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
+    const response = await fetch('http://localhost:3000/api/login', {
+        method: 'POST',
+        credentials: 'include', // 🔑 Критично для куки!
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
 
-        const data = await response.json();
-        console.log("Ответ от сервера:", data);
+    const data = await response.json();
+    console.log("Ответ от сервера:", data);
 
-        if (data.success) {
-            loginModal.style.display = "none";  // Закрыть окно авторизации
-            userProfile.style.display = "block";  // Показать профиль
-            fillProfileForm(data.user);  // Заполнить форму данными
+    if (data.success) {
+        loginModal.style.display = "none";  // Закрыть окно авторизации
+        userProfile.style.display = "block";  // Показать профиль
+        console.log("Данные пользователя:", data);
+        fillProfileForm(data.user);  // Заполнить форму данными
 
-            // Сохраняем данные пользователя в localStorage
-            localStorage.setItem("loggedIn", "true");
-            localStorage.setItem("user", JSON.stringify(data.user));
-        } else {
-            alert('Ошибка при авторизации');
-        }
-    };
+        // Сохраняем данные пользователя в localStorage
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("user", JSON.stringify(data.user));
+        console.log(localStorage);
+
+        // Если это сотрудник, перенаправляем на админ-панель
+        if (data.redirectToAdminPanel) {
+            // редирект на админ панель
+            window.location.href = "admin.html";
+        } 
+    } else {
+        alert('Ошибка при авторизации');
+    }
+};
 
     logoutBtn.onclick = async function () {
         console.log("Выход из аккаунта...");
@@ -199,35 +211,68 @@
         alert("Вы вышли из аккаунта");
     };
 
-    document.getElementById("saveProfileBtn").onclick = async function (event) {
-        event.preventDefault();
+    document.getElementById('saveProfileBtn').onclick = async (e) => {
+    e.preventDefault();
+    console.log("Local:",localStorage);
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return alert("Ошибка: пользователь не найден");
 
-        console.log("Сохранение изменений профиля...");
-        const firstName = document.getElementById("userFirstNameDisplay").value.trim();
-        const lastName = document.getElementById("userLastNameDisplay").value.trim();
-        const username = document.getElementById("userNameDisplay").value.trim();
-        const email = document.getElementById("userEmailDisplay").value.trim();
-        const password = document.getElementById("userPasswordDisplay").value.trim();
-
-        const response = await fetch('http://localhost:3000/api/updateProfile', {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ firstName, lastName, username, email, password })
-        });
-
-        const data = await response.json();
-        console.log("Ответ от сервера при обновлении профиля:", data);
-
-        if (data.success) {
-            alert("Профиль обновлен успешно!");
-        } else {
-            alert("Ошибка при обновлении профиля.");
-        }
+    const user = JSON.parse(userStr);
+    const uid = user.CustomerID;  // Получаем ID пользователя из localStorage
+    console.log("UID",uid);
+    const firstName = document.getElementById("userFirstNameDisplay").value;
+    const lastName = document.getElementById("userLastNameDisplay").value;
+    const username = document.getElementById("userNameDisplay").value;
+    const password = document.getElementById("userPasswordDisplay").value;
+    const phoneNumber = document.getElementById("userPhoneNumberDisplay").value;
+    const email = document.getElementById("userEmailDisplay").value;
+    const address = document.getElementById("userAddressDisplay").value;
+        
+    // Формируем объект данных для отправки
+    const userData = {
+        CustomerID: uid,  // ID пользователя из localStorage
+        FirstName: firstName,
+        LastName: lastName,
+        UserName: username,
+        PhoneNumber: phoneNumber,
+        Email: email,
+        Address: address
     };
 
+    // Если пароль не пустой, добавляем его в данные
+    if (password.trim() !== "") {
+        userData.Password = password;
+    }
+
+    try {
+        
+        // Отправляем запрос на сервер для обновления данных
+        const response = await fetch('http://localhost:3000/api/updateProfile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert("Профиль обновлён!");
+            // Обновляем данные в localStorage
+            const newUserData = { ...user, ...userData };
+            localStorage.setItem("user", JSON.stringify(newUserData));
+            fillProfileForm(newUserData);  // Заполняем форму новыми данными
+        } else {
+            alert("Ошибка: " + result.message);
+        }
+    } catch (error) {
+        console.error("Ошибка при обновлении профиля:", error);
+        alert("Произошла ошибка при сохранении данных.");
+    }
+};
+
+
     async function checkSession() {
-        console.log("Проверка сессии при загрузке страницы...");
+        console.log("Проверка сессии ...");
 
         // Проверка в localStorage, если пользователь уже авторизован
         const loggedIn = localStorage.getItem("loggedIn");
@@ -246,12 +291,19 @@
     }
 
     function fillProfileForm(user) {
-        document.getElementById("userFirstNameDisplay").value = user.firstName || '';
-        document.getElementById("userLastNameDisplay").value = user.lastName || '';
-        document.getElementById("userNameDisplay").value = user.username || '';
-        document.getElementById("userEmailDisplay").value = user.email || '';
-        document.getElementById("userPasswordDisplay").value = user.password || '';
+    if (!user) {
+        console.error("Нет данных пользователя для заполнения формы.");
+        return;
     }
+
+    document.getElementById('userNameDisplay').value = user.UserName || '';
+    document.getElementById('userFirstNameDisplay').value = user.FirstName || '';
+    document.getElementById('userLastNameDisplay').value = user.LastName || '';
+    document.getElementById('userEmailDisplay').value = user.Email || '';
+    document.getElementById('userPhoneNumberDisplay').value = user.PhoneNumber || '';
+    document.getElementById('userAddressDisplay').value = user.Address || '';
+    document.getElementById('userPasswordDisplay').value = user.Password || '';
+}
 });
     </script>
 </body>

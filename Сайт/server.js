@@ -113,110 +113,98 @@ app.get('/api/getProfile', async (req, res) => {
   }
 });
 app.post('/api/updateProfile', async (req, res) => {
-  const { firstName, lastName, username, email, password } = req.body;
-
   try {
-      const pool = app.locals.db;
+      const { CustomerID, UserName, Password, FirstName, LastName, PhoneNumber, Email, Address } = req.body;
+      console.log("Обновляем данные для клиента с ID:", CustomerID);
+      console.log('Received update data:', req.body);
 
-      // Используем текущего пользователя для обновления его данных
-      const userId = req.session.user?.id;  // Получаем id текущего пользователя
-
-      if (!userId) {
-          return res.json({ success: false, message: 'Пользователь не авторизован' });
+      // Проверяем, что все обязательные поля присутствуют, в том числе пароль
+      if (!CustomerID || !FirstName || !LastName || !UserName || !PhoneNumber || !Email || !Address || !Password) {
+          return res.status(400).json({ success: false, message: 'Все поля должны быть заполнены, включая пароль' });
       }
 
-      let query = `UPDATE CustomerS SET 
-                      FirstName = @firstName,
-                      LastName = @lastName,
-                      UserName = @username,
-                      Email = @email`;
+      const pool = app.locals.db; // Получаем подключение к БД из app.locals
 
-      // Если пользователь меняет пароль, добавляем условие для обновления пароля
-      if (password) {
-          query += `, Password = @password`;
-      }
+      // Параметризированный запрос для обновления данных пользователя
+      const query = `
+          UPDATE dbo.Customers
+          SET UserName = @UserName, FirstName = @FirstName, LastName = @LastName, PhoneNumber = @PhoneNumber, Email = @Email, Address = @Address, Password = @Password
+          WHERE CustomerID = @CustomerID
+      `;
+      
+      const request = pool.request();
+      request.input('UserName', mssql.VarChar, UserName);
+      request.input('FirstName', mssql.VarChar, FirstName);
+      request.input('LastName', mssql.VarChar, LastName);
+      request.input('PhoneNumber', mssql.VarChar, PhoneNumber);
+      request.input('Email', mssql.VarChar, Email);
+      request.input('Address', mssql.VarChar, Address);
+      request.input('Password', mssql.VarChar, Password);
+      request.input('CustomerID', mssql.Int, CustomerID);
 
-      query += ` WHERE CustomerID = @id`;
-
-      // Отправляем запрос на обновление данных в базе данных
-      let request = pool.request();
-      request.input('id', mssql.Int, userId);
-      request.input('firstName', mssql.VarChar, firstName);
-      request.input('lastName', mssql.VarChar, lastName);
-      request.input('username', mssql.VarChar, username);
-      request.input('email', mssql.VarChar, email);
-
-      if (password) {
-          request.input('password', mssql.VarChar, password);
-      }
-
+      // Выполняем запрос к базе данных
       await request.query(query);
 
-      res.json({ success: true, message: 'Профиль обновлен' });
-  } catch (err) {
-      console.error('❌ Ошибка при обновлении данных профиля:', err);
+      res.json({ success: true });
+  } catch (error) {
+      console.error('Error updating profile:', error);
       res.status(500).json({ success: false, message: 'Ошибка сервера' });
   }
 });
+
+
+
 // API для авторизации
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-
+  
   try {
     const pool = app.locals.db;
+    const request = pool.request()
+      .input('username', mssql.VarChar, username)
+      .input('password', mssql.VarChar, password);
 
-    // Поиск в Employees
-    let request = pool.request();
-    request.input('username', mssql.VarChar, username);
-    request.input('password', mssql.VarChar, password);
+    // Проверка пользователя среди клиентов
+    const customerQuery = `SELECT * FROM Customers WHERE UserName = @username AND Password = @password`;
+    const customerResult = await request.query(customerQuery);
 
-    const employee = await request.query('SELECT * FROM Employees WHERE UserName = @username AND Password = @password');
+    // Если не найден среди клиентов, проверяем среди сотрудников
+    if (customerResult.recordset.length === 0) {
+      const employeeQuery = `SELECT * FROM Employees WHERE UserName = @username AND Password = @password`;
+      const employeeResult = await request.query(employeeQuery);
 
-    if (employee.recordset.length > 0) {
-      const emp = employee.recordset[0];
-
-      // Сохраняем в сессию
+      if (employeeResult.recordset.length > 0) {
+        // Если сотрудник найден, перенаправляем на админ панель
+        const employee = employeeResult.recordset[0];
+        req.session.user = {
+          id: employee.EmployeeID,
+          username: employee.UserName,
+          role: 'admin', // Роль для сотрудников
+        };
+        return res.json({
+          success: true,
+          user: employee,
+          redirectToAdminPanel: true,  // Уведомляем фронт, что нужно перенаправить
+        });
+      } else {
+        return res.json({ success: false, message: 'Неверные данные пользователя или пароля' });
+      }
+    } else {
+      const customer = customerResult.recordset[0];
       req.session.user = {
-        id: emp.EmployeeID,
-        firstName: emp.FirstName,
-        lastName: emp.LastName,
-        username: emp.UserName,
-        email: emp.Email,
-        role: emp.RoleID === 1 ? 'admin' : 'user',
-        password: emp.Password
+        id: customer.CustomerID,
+        username: customer.UserName,
+        role: 'user',  // Роль для клиентов
       };
-
-      return res.json({ success: true, role: req.session.user.role, user: req.session.user });
+      return res.json({
+        success: true,
+        user: customer,
+        redirectToAdminPanel: false,  // Уведомляем фронт, что можно отобразить обычный профиль
+      });
     }
-
-    // Поиск в Customers
-    request = pool.request();
-    request.input('username', mssql.VarChar, username);
-    request.input('password', mssql.VarChar, password);
-
-    const customer = await request.query('SELECT * FROM Customers WHERE UserName = @username AND Password = @password');
-
-    if (customer.recordset.length > 0) {
-      const cust = customer.recordset[0];
-
-      req.session.user = {
-        id: cust.CustomerID,
-        firstName: cust.FirstName,
-        lastName: cust.LastName,
-        username: cust.UserName,
-        email: cust.Email,
-        role: 'user',
-        password: cust.Password
-      };
-
-      return res.json({ success: true, role: 'user', user: req.session.user });
-    }
-
-    return res.json({ success: false, message: "Неверные данные" });
-
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Ошибка сервера" });
+    res.status(500).json({ success: false, message: 'Ошибка сервера' });
   }
 });
 app.get('/api/session', (req, res) => {
