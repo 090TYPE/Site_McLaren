@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McLaren Online Store</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo"><a href="index.html">McLaren</a></div>
+            <nav>
+                <ul>
+                    <li><a href="AllCars.html">All cars</a></li>
+                    <li><a href="F1.html">F1</a></li>
+                </ul>
+            </nav>
+            <div class="search-bar">
+                <input type="text" placeholder="Поиск...">
+            </div>
+            <div class="cart"><a href="`"><img class="imgprof" src="free-icon-shopping-cart-711897.png" alt=""></a></div>
+            <div class="user-profile"><a href="`"><img class="imgprof" src="free-icon-profile-3106773.png" alt=""></a></div>
+        </div>
+    </header>
+    
+    <div class="product-section">
+        <div class="container">
+            <h2>All cars</h2>
+            <div class="product-grid" id="product-grid">
+                <!-- Динамически добавленные карточки будут тут -->
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container">
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <p>123 McLaren Street<br>City, Country 12345</p>
+                <p>Email: info@mclaren.com</p>
+                <p>Phone: +1 (234) 567-890</p>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Follow Us</h3>
+                <ul class="social-icons">
+                    <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111393.png" alt="Facebook"></a></li>
+                    <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"></a></li>
+                    <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Twitter"></a></li>
+                    <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111498.png" alt="YouTube"></a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Оформление заказа</h2>
+            <form id="orderForm">
+                <label for="fullName">Полное имя:</label>
+                <input type="text" id="fullName" name="fullName" required>
+                <label for="address">Адрес:</label>
+                <input type="text" id="address" name="address" required>
+                <label for="phone">Телефон:</label>
+                <input type="tel" id="phone" name="phone" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <button type="submit">Оформить</button>
+            </form>
+        </div>
+    </div>
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Авторизация</h2>
+            <form id="loginForm">
+                <label for="username">Имя пользователя:</label>
+                <input type="text" id="username" name="username" pattern="[A-Za-z0-9]+" title="Только английские буквы и цифры" required>
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" pattern="[A-Za-z0-9]+" title="Только английские буквы и цифры" required>
+                <button type="submit">Войти</button>
+            </form>
+            <button id="registerBtn">Зарегистрироваться</button>
+        </div>
+    </div>
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Регистрация</h2>
+            <form id="registerForm">
+                <label for="regUsername">Имя пользователя:</label>
+                <input type="text" id="regUsername" name="regUsername" pattern="[A-Za-z0-9]+" title="Только английские буквы и цифры" required>
+                <label for="regPassword">Пароль:</label>
+                <input type="password" id="regPassword" name="regPassword" pattern="[A-Za-z0-9]+" title="Только английские буквы и цифры" required>
+                <label for="regEmail">Email:</label>
+                <input type="email" id="regEmail" name="regEmail" required>
+                <button type="submit">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var loginModal = document.getElementById("loginModal");
+            var registerModal = document.getElementById("registerModal");
+            var orderModal = document.getElementById("orderModal");
+            var userProfileIcon = document.querySelector(".user-profile a");
+            var closeButtons = document.getElementsByClassName("close");
+            var loginForm = document.getElementById("loginForm");
+            var registerForm = document.getElementById("registerForm");
+            var orderForm = document.getElementById("orderForm");
+            var registerBtn = document.getElementById("registerBtn");
+            var notification = document.getElementById("notification");
+
+            var buyButtons = document.querySelectorAll(".btn");
+        
+            userProfileIcon.onclick = function(event) {
+                event.preventDefault();
+                loginModal.style.display = "block";
+            }
+        
+            for (var i = 0; i < closeButtons.length; i++) {
+                closeButtons[i].onclick = function() {
+                    loginModal.style.display = "none";
+                    registerModal.style.display = "none";
+                    orderModal.style.display = "none";
+                }
+            }
+        
+            window.onclick = function(event) {
+                if (event.target == loginModal) {
+                    loginModal.style.display = "none";
+                } else if (event.target == registerModal) {
+                    registerModal.style.display = "none";
+                } else if (event.target == orderModal) {
+                    orderModal.style.display = "none";
+                }
+            }
+        
+            loginForm.onsubmit = async function(event) {
+    event.preventDefault();
+    if (loginForm.checkValidity()) {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        try {
+            const response = await fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка сети или сервера');
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                loginModal.style.display = "none";
+                showNotification("Успешный вход!");
+
+                // Переход в зависимости от роли
+                if (data.role === "admin") {
+                    window.location.href = "adminpanel.html";
+                } else if (data.role === "user") {
+                    window.location.href = "profile.html";
+                }
+            } else {
+                showNotification("Неверное имя пользователя или пароль!");
+            }
+        } catch (error) {
+            console.error('Ошибка при входе:', error);
+            showNotification("Ошибка сервера при попытке входа!");
+        }
+    } else {
+        loginForm.reportValidity();
+    }
+}
+        
+            registerForm.onsubmit = function(event) {
+                event.preventDefault();
+                if (registerForm.checkValidity()) {
+                    registerModal.style.display = "none";
+                    showNotification("Успешная регистрация!");
+                } else {
+                    registerForm.reportValidity();
+                }
+            }
+        
+            registerBtn.onclick = function() {
+                loginModal.style.display = "none";
+                registerModal.style.display = "block";
+            }
+
+            for (var i = 0; i < buyButtons.length; i++) {
+                buyButtons[i].onclick = function() {
+                    orderModal.style.display = "block";
+                }
+            }
+
+            orderForm.onsubmit = function(event) {
+                event.preventDefault();
+                if (orderForm.checkValidity()) {
+                    orderModal.style.display = "none";
+                    showNotification("Заказ оформлен!");
+                } else {
+                    orderForm.reportValidity();
+                }
+            }
+
+            function showNotification(message) {
+                notification.textContent = message;
+                notification.style.display = "block";
+                setTimeout(() => {
+                    notification.style.display = "none";
+                }, 3000); // Скрыть через 3 секунды
+            }
+        });
+    </script>
+   <script>
+    fetch('http://localhost:3000/api/cars')
+      .then(response => response.json())
+      .then(data => {
+        const grid = document.getElementById('product-grid');
+        data.forEach(car => {
+          const card = document.createElement('div');
+          card.className = 'product-card';
+
+          const imageUrl = car.Image
+            ? 'data:image/png;base64,' + car.Image
+            : 'https://via.placeholder.com/300x180?text=No+Image';
+
+          card.innerHTML = `
+            <img src="${imageUrl}" alt="${car.Model}">
+            <h3>${car.Model}</h3>
+            <p>Год: ${car.Year}</p>
+            <p>Цвет: ${car.Color}</p>
+            <p>Двигатель: ${car.EngineType}</p>
+            <p>Трансмиссия: ${car.Transmission}</p>
+            <p><strong>Цена: ${car.Price.toFixed(2)} $</strong></p>
+            <button class="btn">Купить</button>
+          `;
+          grid.appendChild(card);
+        });
+      })
+      .catch(error => {
+        console.error("Ошибка загрузки автомобилей:", error);
+      });
+  </script>
+</body>
+<div id="notification" class="notification"></div>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McLaren Online Store</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="logo"><a href="index.html">McLaren</a></div>
+            <nav>
+                <ul>
+                    <li><a href="AllCars.html">All cars</a></li>
+                    <li><a href="F1.html">F1</a></li>
+                </ul>
+            </nav>
+            <div class="search-bar">
+                <input type="text" placeholder="Поиск...">
+            </div>
+            <div class="cart"><a href="#"><img class="imgprof" src="free-icon-shopping-cart-711897.png" alt=""></a></div>
+            <div class="user-profile"><a href="#" id="openLoginBtn"><img class="imgprof" src="free-icon-profile-3106773.png" alt=""></a></div>
+        </div>
+    </header>
+    <div class="featured-section">
+        <div class="container">
+            <h1>McLaren 720S</h1>
+            <p>Experience the thrill of driving a McLaren 720S, with its powerful V8 engine and sleek design.</p>
+            <button class="btn">Learn More</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно профиля (в виде формы) -->
+    <div id="userProfile">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Ваш профиль</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="userNameDisplay">Логин:</label>
+                    <input type="text" id="userNameDisplay" >
+                </div>
+                <div>
+                    <label for="userFirstNameDisplay">Имя:</label>
+                    <input type="text" id="userFirstNameDisplay" />
+                </div>
+                <div>   
+                    <label for="userLastNameDisplay">Фамилия:</label>
+                    <input type="text" id="userLastNameDisplay" />
+                </div>
+                <div class="form-group">
+                    <label for="userEmailDisplay">Email:</label>
+                    <input type="email" id="userEmailDisplay" />
+                </div>
+                <div class="form-group">
+                    <label for="profilePhone">Телефон:</label>
+                    <input type="phone" id="userEmailDisplay" >
+                </div>
+                <div class="form-group">
+                    <label for="profilePassword">Новый пароль:</label>
+                    <input type="password" id="userPasswordDisplay" >
+                </div>
+                <button type="submitBtn" id="saveProfileBtn">Сохранить изменения</button>
+            </form>
+            <button id="logoutBtn">Выйти</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно авторизации -->
+    <div id="loginModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Авторизация</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Логин:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Войти</button>
+                <div class="forgot-password">
+                    <a href="#">Забыли пароль?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <p>123 McLaren Street<br>City, Country 12345</p>
+                <p>Email: info@mclaren.com</p>
+                <p>Phone: +1 (234) 567-890</p>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Follow Us</h3>
+                <ul class="social-icons">
+                    <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111393.png" alt="Facebook"></a></li>
+                    <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"></a></li>
+                    <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Twitter"></a></li>
+                    <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111498.png" alt="YouTube"></a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var loginModal = document.getElementById("loginModal");
+            var openLoginBtn = document.getElementById("openLoginBtn");
+            var closeButtons = document.getElementsByClassName("close");
+            var loginForm = document.getElementById("loginForm");
+            var userProfile = document.getElementById("userProfile");
+            var userNameDisplay = document.getElementById("profileUsername");
+            var logoutBtn = document.getElementById("logoutBtn");
+
+            // Открытие модального окна авторизации при клике на иконку профиля
+            document.getElementById("openLoginBtn").addEventListener("click", function (event) {
+            event.preventDefault();
+
+            const savedUser = localStorage.getItem("loggedUser");
+            checkSession()
+        });
+
+            // Закрытие модального окна авторизации
+            for (var i = 0; i < closeButtons.length; i++) {
+                closeButtons[i].onclick = function() {
+                    loginModal.style.display = "none"; // Закрываем модальное окно
+                    userProfile.style.display = "none"; // Закрываем профиль
+                };
+            }
+
+            // Закрытие модального окна при клике вне окна
+            window.onclick = function(event) {
+                if (event.target == loginModal) {
+                    loginModal.style.display = "none";
+                    userProfile.style.display = "none"; // Закрываем профиль
+                }
+            };
+
+            // Обработка формы входа
+            loginForm.onsubmit = async function(event) {
+    event.preventDefault();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    const response = await fetch('http://localhost:3000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+        loginModal.style.display = "none"; // Закрыть окно авторизации
+        userProfile.style.display = "block"; // Показать профиль
+        loadProfileData(); // Загрузить данные профиля
+    } else {
+        alert('Ошибка при авторизации');
+    }
+};
+
+// Функция для загрузки данных профиля после авторизации
+async function loadProfileData() {
+    const response = await fetch('http://localhost:3000/api/getProfile', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        // Заполняем форму данными
+        document.getElementById("userFirstNameDisplay").value = data.user.firstName;
+        document.getElementById("userLastNameDisplay").value = data.user.lastName;
+        document.getElementById("userNameDisplay").value = data.user.username;
+        document.getElementById("userEmailDisplay").value = data.user.email;
+        document.getElementById("userPasswordDisplay").value = data.user.password; // Пароль скрыт, но если нужно отображать, уберите это
+    } else {
+        alert('Ошибка загрузки данных профиля');
+    }
+}
+// Обработчик кнопки сохранения изменений
+document.getElementById("saveProfileBtn").onclick = async function(event) {
+    event.preventDefault();
+
+    // Собираем данные из формы
+    const firstName = document.getElementById("userFirstNameDisplay").value.trim();
+    const lastName = document.getElementById("userLastNameDisplay").value.trim();
+    const username = document.getElementById("userNameDisplay").value.trim();
+    const email = document.getElementById("userEmailDisplay").value.trim();
+    const password = document.getElementById("userPasswordDisplay").value.trim();
+
+    // Проверка на пустые поля (при необходимости)
+    if (!firstName || !lastName || !username || !email) {
+        alert("Пожалуйста, заполните все поля.");
+        return;
+    }
+
+    // Отправляем данные на сервер
+    const response = await fetch('http://localhost:3000/api/updateProfile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, username, email, password })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        alert("Профиль обновлен успешно!");
+    } else {
+        alert("Ошибка при обновлении профиля.");
+    }
+};
+            // Выход из аккаунта
+            logoutBtn.onclick = function() {
+                userProfile.style.display = "none"; // Скрыть профиль
+                alert("Вы вышли из аккаунта");
+            };
+
+        });
+        async function checkSession() {
+  const response = await fetch('http://localhost:3000/api/session');
+  const data = await response.json();
+
+  if (data.loggedIn) {
+    userProfile.style.display = "block";
+    loginModal.style.display = "none";
+    // можно загрузить данные в поля профиля:
+    fillProfileForm(data.user);
+  } else {
+    loginModal.style.display = "block";
+    userProfile.style.display = "none";
+  }
+}
+    </script>
+</body>
+</html>

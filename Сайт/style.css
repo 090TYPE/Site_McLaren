@@ -1,0 +1,758 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
+}
+
+ul {
+  list-style: none;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  overflow: hidden;
+}
+
+header {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px 0;
+}
+
+header .logo {
+  float: left;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+header nav {
+  float: right;
+}
+
+header nav li {
+  display: inline;
+  padding: 0 10px;
+}
+
+header .search-bar {
+  float: right;
+  margin-right: 30px;
+}
+
+header .cart,
+header .user-profile {
+  float: right;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  margin-left: 10px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #fff;
+}
+
+.featured-section {
+  background-image: url('https://i.pinimg.com/originals/eb/b6/97/ebb6979d4b71cce9a1ac81847e946ed2.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #fff;
+  padding: 0 30px;
+}
+
+.featured-section h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.featured-section p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  max-width: 600px;
+}
+
+.featured-section .btn {
+  background-color: #fff;
+  color: #000;
+  padding: 10px 30px;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.featured-section .btn:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.info-section {
+  background-color: #f7f7f7;
+  padding: 50px 0;
+  text-align: center;
+}
+
+.info-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.info-section p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  color: #666;
+}
+
+.info-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-section li {
+  margin-bottom: 10px;
+}
+
+.info-section a {
+  color: #337ab7;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.info-section a:hover {
+  color: #23527c;
+  text-shadow: 0 0 10px rgba(51, 122, 183, 0.5);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 600px;
+  height: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow: auto;
+  padding-top: 60px;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #888;
+}
+
+.close {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+}
+
+blockquote {
+  font-style: italic;
+  margin: 20px 0;
+  color: #555;
+}
+
+footer {
+  background-color: #333;
+  color: #fff;
+  padding: 40px 0;
+  text-align: center;
+}
+
+footer .container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+footer .footer-column {
+  flex: 1;
+  min-width: 250px;
+  margin-bottom: 20px;
+}
+
+footer .footer-column h3 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+footer .footer-column p,
+footer .footer-column ul,
+footer .footer-column li {
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+footer .footer-column ul {
+  padding: 0;
+}
+
+footer .footer-column ul li {
+  list-style: none;
+}
+
+footer .footer-column ul li a {
+  color: #ccc;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+footer .footer-column ul li a:hover {
+  color: #fff;
+}
+
+footer .social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 0;
+}
+
+footer .social-icons li {
+  list-style: none;
+}
+
+footer .social-icons li a {
+  display: block;
+  width: 40px;
+  height: 40px;
+}
+
+footer .social-icons li a img {
+  width: 100%;
+  height: 100%;
+  filter: invert(1);
+  transition: transform 0.3s, filter 0.3s;
+}
+
+footer .social-icons li a:hover img {
+  transform: scale(1.2);
+  filter: invert(0.5);
+}
+
+.product-section {
+  padding: 30px 0;
+}
+
+.product-section h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.product-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  width: calc(33.333% - 20px);
+  box-sizing: border-box;
+}
+
+.product-card img {
+  width: 100%;
+  height: auto;
+}
+
+.product-card h3 {
+  font-size: 1.5rem;
+  margin: 15px;
+}
+
+.product-card p {
+  font-size: 1rem;
+  margin: 0 15px 15px;
+}
+
+.product-card .btn {
+  display: block;
+  background-color: #000;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+  margin: 0 15px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.product-card .btn:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.imgprof {
+  height: 30px;
+}
+
+.Cust {
+  height: 300px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.Cust:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.f1-section {
+  background-color: #f7f7f7;
+  padding: 30px 0;
+}
+
+.f1-section h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.f1-section p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.f1-section .driver,
+.f1-section .car {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+.f1-section .driver img,
+.f1-section .car img {
+  width: 150px;
+  height: auto;
+  margin-right: 20px;
+}
+
+.f1-section .driver h4,
+.f1-section .car h4 {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+
+.f1-section .driver p,
+.f1-section .car p,
+.f1-section .driver ul,
+.f1-section .car ul,
+.f1-section .driver h4,
+.f1-section .car h4 {
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
+/* Общие стили для всех модальных окон */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow: auto;
+  padding-top: 60px;
+  transition: all 0.3s ease;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  max-width: 400px;
+  border-radius: 10px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+}
+
+/* Для профиля, заказов и других форм */
+#userWindow, #registerModal, #orderModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  overflow: auto;
+}
+
+.user-content, .register-content, .order-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  max-width: 400px;
+  border-radius: 10px;
+}
+
+.notification {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4caf50;
+  color: white;
+  padding: 15px;
+  z-index: 1000;
+  border-radius: 0 0 5px 5px;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Формы */
+form label {
+  display: block;
+  margin-top: 10px;
+}
+
+form input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+form button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #0056b3;
+}
+
+#ordersList {
+  margin-top: 15px;
+}
+
+.order-item {
+  background-color: #f4f4f4;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+}
+
+.model img {
+  width: 200px;
+  height: auto;
+  margin-right: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.model img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.product-card img {
+  width: 100%;
+  height: auto;
+}
+/* Модальное окно авторизации */
+#loginModal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Центрирует окно */
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон */
+  backdrop-filter: blur(5px); /* Добавляем эффект размытия фона */
+  padding: 30px;
+  border-radius: 0;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease; /* Анимация появления */
+}
+
+/* Стилизация содержимого окна */
+#loginModal .modal-content {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f7f7f7;
+  width: 100%;
+  height: 100%;
+  max-width: 600px; /* Максимальная ширина окна */
+  overflow-y: auto;
+}
+
+/* Заголовок */
+#loginModal h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Кнопка закрытия */
+#loginModal .close {
+  color: #aaa;
+  float: right;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+#loginModal .close:hover,
+#loginModal .close:focus {
+  color: #333;
+}
+
+/* Форма и поля */
+#loginModal .form-group {
+  margin-bottom: 20px;
+}
+
+#loginModal input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #f7f7f7;
+  transition: border 0.3s ease, background-color 0.3s ease;
+}
+
+#loginModal input:focus {
+  border-color: #007bff;
+  background-color: #fff;
+  outline: none;
+}
+
+#loginModal button {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#loginModal button:hover {
+  background-color: #0056b3;
+}
+
+/* Ссылка на восстановление пароля */
+#loginModal .forgot-password {
+  text-align: center;
+  margin-top: 10px;
+}
+
+#loginModal .forgot-password a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+#loginModal .forgot-password a:hover {
+  color: #0056b3;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Модальное окно профиля */
+#userProfile {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Центрирует окно */
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон */
+  backdrop-filter: blur(5px); /* Добавляем эффект размытия фона */
+  padding: 30px;
+  border-radius: 0;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease; /* Анимация появления */
+}
+
+/* Стилизация содержимого окна */
+#userProfile .modal-content {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f7f7f7;
+  width: 100%;
+  height: 100%;
+  max-width: 600px; /* Максимальная ширина окна */
+  overflow-y: auto;
+}
+
+/* Заголовок */
+#userProfile h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Кнопка закрытия */
+#userProfile .close {
+  color: #aaa;
+  float: right;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+#userProfile .close:hover,
+#userProfile .close:focus {
+  color: #333;
+}
+
+/* Форма и поля */
+#userProfile .form-group {
+  margin-bottom: 20px;
+}
+
+#userProfile input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #f7f7f7;
+  transition: border 0.3s ease, background-color 0.3s ease;
+}
+
+#userProfile input:focus {
+  border-color: #007bff;
+  background-color: #fff;
+  outline: none;
+}
+
+#userProfile button {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#userProfile button:hover {
+  background-color: #0056b3;
+}
+
+
+/* Анимация появления модального окна */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Примерная стилизация для фона */
+#userProfile {
+  background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон */
+  backdrop-filter: blur(5px); /* Добавим эффект размытия фона */
+}
