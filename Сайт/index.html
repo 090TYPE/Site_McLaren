@@ -71,7 +71,47 @@
             <button id="logoutBtn">Выйти</button>
         </div>
     </div>
-
+    <!-- Модальное окно регистрации -->
+    <div id="registerModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Регистрация</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regUsername">Логин:</label>
+                    <input type="text" id="regUsername" name="regUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Пароль:</label>
+                    <input type="password" id="regPassword" name="regPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="regFirstName">Имя:</label>
+                    <input type="text" id="regFirstName" name="regFirstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="regLastName">Фамилия:</label>
+                    <input type="text" id="regLastName" name="regLastName" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPhone">Телефон:</label>
+                    <input type="text" id="regPhone" name="regPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" name="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="regAddress">Адрес:</label>
+                    <input type="text" id="regAddress" name="regAddress" required>
+                </div>
+                <button type="submit">Зарегистрироваться</button>
+                <div class="forgot-password">
+                    <a href="#" id="openLoginLink">Уже есть аккаунт?</a>
+                </div>
+            </form>
+        </div>
+    </div>
     <!-- Модальное окно авторизации -->
     <div id="loginModal">
         <div class="modal-content">
@@ -88,7 +128,7 @@
                 </div>
                 <button type="submit">Войти</button>
                 <div class="forgot-password">
-                    <a href="#">Забыли пароль?</a>
+                    <a href="#" id="openRegisterLink">Нет аккаунта?</a>
                 </div>
             </form>
         </div>
@@ -304,6 +344,87 @@
     document.getElementById('userAddressDisplay').value = user.Address || '';
     document.getElementById('userPasswordDisplay').value = user.Password || '';
 }
+
+const registerModal = document.getElementById("registerModal");
+const openRegisterLink = document.getElementById("openRegisterLink");
+
+openRegisterLink.addEventListener("click", function (event) {
+    event.preventDefault();
+    loginModal.style.display = "none";
+    registerModal.style.display = "block";
+});
+
+document.querySelectorAll(".close").forEach(btn => {
+    btn.addEventListener("click", () => {
+        loginModal.style.display = "none";
+        userProfile.style.display = "none";
+        registerModal.style.display = "none";
+    });
+});
+
+window.onclick = function (event) {
+    if (event.target === registerModal) {
+        registerModal.style.display = "none";
+    }
+};
+
+// Обработка отправки формы регистрации
+document.getElementById('registerForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value.trim();
+        const firstName = document.getElementById('regFirstName').value.trim();
+        const lastName = document.getElementById('regLastName').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const address = document.getElementById('regAddress').value.trim();
+
+      // Проверка логина на сервере
+      const checkResponse = await fetch('http://localhost:3000/api/check-username', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      });
+
+      const checkData = await checkResponse.json();
+
+      if (checkData.exists) {
+        alert('Пользователь с таким логином уже существует.');
+        return;
+      }
+
+      // Если логин свободен, отправляем данные на регистрацию
+      const response = await fetch('http://localhost:3000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          password,
+          firstName,
+          lastName,
+          phone,
+          email,
+          address
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('Регистрация прошла успешно!');
+      } else {
+        alert('Ошибка при регистрации: ' + result.message);
+      }
+    });
+
+document.getElementById('openLoginLink').addEventListener('click', function (e) {
+    e.preventDefault(); // отмена перехода по ссылке
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) {
+      loginModal.style.display = 'block';
+    }
+  });
 });
     </script>
 </body>

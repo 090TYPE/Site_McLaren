@@ -330,3 +330,85 @@ app.post('/api/table/:tableName/update', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// Маппинг названий полей
+const fieldNames = {
+  UserName: 'Логин',
+  Password: 'Пароль',
+  FirstName: 'Имя',
+  LastName: 'Фамилия',
+  PhoneNumber: 'Телефон',
+  Email: 'Email',
+  Address: 'Адрес'
+};
+// API маршрут для регистрации нового пользователя
+app.post('/api/register', async (req, res) => {
+  const { username, password, firstName, lastName, phone, email, address } = req.body;
+
+  // Проверка, если все поля заполнены
+  if (!username || !password || !firstName || !lastName || !phone || !email || !address) {
+    return res.status(400).json({
+      success: false,
+      message: 'Пожалуйста, заполните все поля',
+      missingFields: {
+        username: !username,
+        password: !password,
+        firstName: !firstName,
+        lastName: !lastName,
+        phone: !phone,
+        email: !email,
+        address: !address
+      }
+    });
+  }
+
+  try {
+    const pool = await mssql.connect(sqlConfig);
+    await pool.request()
+      .input('UserName', mssql.VarChar, username)
+      .input('Password', mssql.VarChar, password)
+      .input('FirstName', mssql.VarChar, firstName)
+      .input('LastName', mssql.VarChar, lastName)
+      .input('PhoneNumber', mssql.VarChar, phone)
+      .input('Email', mssql.VarChar, email)
+      .input('Address', mssql.VarChar, address)
+      .query(`
+        INSERT INTO Customers (UserName, Password, FirstName, LastName, PhoneNumber, Email, Address)
+        VALUES (@UserName, @Password, @FirstName, @LastName, @PhoneNumber, @Email, @Address)
+      `);
+
+    res.json({ success: true, message: 'Регистрация прошла успешно' });
+  } catch (error) {
+    console.error('Ошибка при регистрации:', error);
+    res.status(500).json({ success: false, message: 'Ошибка сервера при регистрации' });
+  }
+});
+
+// API маршрут для проверки уникальности имени пользователя
+app.post('/api/check-username', async (req, res) => {
+  const { username } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ success: false, message: 'Имя пользователя не указано' });
+  }
+
+  try {
+    const pool = req.app.locals.db;
+    const request = pool.request();
+
+    request.input('username', mssql.VarChar, username);
+
+    const result = await request.query(`
+      SELECT 1 FROM Customers WHERE UserName = @username
+    `);
+
+    if (result.recordset.length > 0) {
+      res.json({ exists: true, message: 'Имя пользователя уже занято' });
+    } else {
+      res.json({ exists: false, message: 'Имя пользователя свободно' });
+    }
+
+  } catch (error) {
+    console.error('❌ Ошибка при проверке логина:', error);
+    res.status(500).json({ success: false, message: 'Ошибка сервера при проверке логина' });
+  }
+});

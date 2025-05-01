@@ -429,7 +429,7 @@ footer .social-icons li a:hover img {
 }
 
 /* Для профиля, заказов и других форм */
-#userWindow, #registerModal, #orderModal {
+#userWindow {
   display: none;
   position: fixed;
   z-index: 1000;
@@ -441,7 +441,7 @@ footer .social-icons li a:hover img {
   overflow: auto;
 }
 
-.user-content, .register-content, .order-content {
+.user-content{
   background-color: #fefefe;
   margin: auto;
   padding: 20px;
@@ -978,4 +978,118 @@ button.menu-button:hover {
 /* Скрытые элементы по умолчанию */
 .hidden {
   display: none;
+}
+/* Регистрация */
+#registerModal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  padding: 30px;
+  border-radius: 0;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease;
+}
+
+#registerModal .modal-content {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f7f7f7;
+  width: 100%;
+  height: 100%;
+  max-width: 600px;
+  overflow-y: auto;
+}
+
+#registerModal h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+#registerModal .close {
+  color: #aaa;
+  float: right;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+#registerModal .close:hover,
+#registerModal .close:focus {
+  color: #333;
+}
+
+#registerModal .form-group {
+  margin-bottom: 20px;
+}
+
+#registerModal input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #f7f7f7;
+  transition: border 0.3s ease, background-color 0.3s ease;
+}
+
+#registerModal input:focus {
+  border-color: #007bff;
+  background-color: #fff;
+  outline: none;
+}
+
+#registerModal button {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#registerModal button:hover {
+  background-color: #0056b3;
+}
+
+#registerModal .forgot-password {
+  text-align: center;
+  margin-top: 10px;
+}
+
+#registerModal .forgot-password a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+#registerModal .forgot-password a:hover {
+  color: #0056b3;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }
