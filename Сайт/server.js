@@ -412,3 +412,49 @@ app.post('/api/check-username', async (req, res) => {
     res.status(500).json({ success: false, message: 'Ошибка сервера при проверке логина' });
   }
 });
+app.post('/api/createSale', async (req, res) => {
+  const { customerId, carId, salePrice, employeeId } = req.body;
+  console.log('Полученные данные:', { customerId, carId, salePrice, employeeId }); // Логируем запрос
+  if (!customerId || !carId || !salePrice) {
+    return res.status(400).json({
+      success: false,
+      message: 'Не все обязательные поля заполнены (CustomerID, CarID, SalePrice).'
+    });
+  }
+
+  try {
+    const pool = req.app.locals.db;
+    const request = pool.request();
+
+    request.input('customerId', mssql.Int, customerId);
+    request.input('carId', mssql.Int, carId);
+    request.input('salePrice', mssql.Decimal(18, 2), salePrice);
+    request.input('saleDate', mssql.Date, new Date());
+
+    // Добавляем employeeId, только если он передан
+    if (employeeId) {
+      request.input('employeeId', mssql.Int, employeeId);
+    }
+
+    const query = `
+      INSERT INTO Sales (CustomerID, CarID, SalePrice, SaleDate${employeeId ? ', EmployeeID' : ''})
+      VALUES (@customerId, @carId, @salePrice, @saleDate${employeeId ? ', @employeeId' : ''})
+    `;
+
+    await request.query(query);
+
+    const updateQuery = `
+    UPDATE Cars
+    SET Available = 0
+    WHERE CarID = @carId
+  `;
+  await request.query(updateQuery);
+  
+    res.json({ success: true, message: 'Продажа успешно добавлена.' });
+
+  } catch (error) {
+    console.error('❌ Ошибка при добавлении продажи:', error);
+    res.status(500).json({ success: false, message: 'Ошибка сервера при добавлении продажи.' });
+  }
+});
+

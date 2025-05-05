@@ -442,14 +442,57 @@
             <p>Двигатель: ${car.EngineType}</p>
             <p>Трансмиссия: ${car.Transmission}</p>
             <p><strong>Цена: ${car.Price.toFixed(2)} $</strong></p>
-            <button class="btn">Купить</button>
+            <button class="buy-btn" data-car-id="${car.CarID}" data-sale-price="${car.Price}">Купить</button>
           `;
           grid.appendChild(card);
         });
-      })
-      .catch(error => {
-        console.error("Ошибка загрузки автомобилей:", error);
+        grid.addEventListener('click', async (event) => {
+  if (event.target.classList.contains('buy-btn')) {
+    const button = event.target;
+    const carId = parseInt(button.dataset.carId);
+    const salePrice = parseFloat(button.dataset.salePrice);
+    const userStr = localStorage.getItem('user');
+    const user = JSON.parse(userStr);
+     const uid = user.CustomerID;  // Получаем ID пользователя из localStorage
+    const customerId = uid; // <-- Заменить на актуального покупателя (например, из сессии)
+    const employeeId = 0;
+    try {
+      const response = await fetch('http://localhost:3000/api/createSale', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          customerId,
+          carId,
+          salePrice,
+          employeeId
+        })
       });
+
+      // Проверка статуса ответа
+      if (!response.ok) {
+        throw new Error(`Ошибка сервера: ${response.statusText}`);
+      }
+
+      const result = await response.json(); // Здесь мы ожидаем JSON
+
+      console.log(result); // Для отладки
+
+      if (result.success) {
+        alert('✅ Продажа успешно оформлена!');
+        location.reload();
+      } else {
+        alert('❌ Ошибка: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Ошибка при запросе:', error);
+      alert('❌ Ошибка при отправке данных на сервер.');
+    }
+  }
+});
+      });
+
   </script>
 </body>
 <div id="notification" class="notification"></div>
