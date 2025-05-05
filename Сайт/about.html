@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McLaren Online Store</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=fbd2c553-3eda-45cc-b8f6-7878c0fc519f" ></script>
+</head>
+<body>
+  <header>
+      <div class="container">
+          <div class="logo"><a href="index.html">McLaren</a></div>
+          <nav>
+              <ul>
+                  <li><a href="AllCars.html">All cars</a></li>
+                  <li><a href="F1.html">F1</a></li>
+                  <li><a href="about.html">About us</a></li>
+              </ul>
+          </nav>
+          <div class="cart"><a href="#"><img class="imgprof" src="free-icon-shopping-cart-711897.png" alt=""></a></div>
+          <div class="user-profile"><a href="#" id="openLoginBtn"><img class="imgprof" src="free-icon-profile-3106773.png" alt=""></a></div>
+      </div>
+  </header>
+
+  <div class="about-section">
+    <div class="container">
+        <h2>О нас</h2>
+        <p>McLaren – это символ скорости, инноваций и высшего качества в мире автоспорта и автомобилестроения. Мы создали наш бренд с целью предоставлять не только самые быстрые автомобили, но и передовые технологии, которые обеспечивают незабываемые впечатления для каждого водителя.</p>
+
+        <h3>История McLaren</h3>
+        <p>Компания McLaren была основана Брюсом Маклареном в 1963 году с целью разработки автомобилей для соревнований. С тех пор McLaren завоевала множество титулов и признание среди поклонников автомобильного спорта по всему миру. Мы продолжаем придерживаться философии инноваций и неуклонного стремления к совершенству.</p>
+
+        <h3>Наши принципы</h3>
+        <ul>
+            <li><strong>Инновации:</strong> Мы всегда на шаг впереди, внедряя новейшие технологии и совершенствуя наши автомобили.</li>
+            <li><strong>Качество:</strong> Каждый автомобиль McLaren разрабатывается с учетом высоких стандартов качества, чтобы обеспечить максимальную надежность и удовольствие от вождения.</li>
+            <li><strong>Стремление к совершенству:</strong> В каждом аспекте нашей работы, от дизайна до инженерных решений, мы стремимся к совершенству.</li>
+        </ul>
+
+        <h3>Наша миссия</h3>
+        <p>Наша миссия – предложить вам лучшие автомобили, которые сочетают в себе элегантность, высокие технологии и невероятную производительность. Мы вдохновляем вас на новые достижения и стремление к совершенству, как на трассе, так и за ее пределами.</p>
+
+        <h3>Наши автомобили</h3>
+        <p>Каждый автомобиль McLaren – это произведение искусства, сочетающее мощность, скорость и исключительное качество. Мы гордимся тем, что предлагаем нашим клиентам автомобили, которые не просто транспортные средства, а настоящие шедевры инженерии.</p>
+
+        <h3>Наши ценности</h3>
+        <p>Мы верим, что каждый автомобиль McLaren должен быть не только скоростным и мощным, но и красивым. Мы не боимся идти на риск, чтобы достичь новых вершин, и всегда ставим интересы наших клиентов на первое место.</p>
+        <h3>Связь с менеджером</h3>
+            <p>Если у вас возникли вопросы или вам нужна дополнительная информация о наших автомобилях или услугах, не стесняйтесь связаться с нашим менеджером. Мы всегда рады помочь!</p>
+            <form action="send_message.php" method="POST" class="contact-form">
+                <label for="name">Ваше имя:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Ваш email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="message">Сообщение:</label>
+                <textarea id="message" name="message" rows="4" required></textarea>
+
+                <button type="submit">Отправить</button>
+            </form>
+            <h3>Наши автосалоны</h3>
+            <div id="map" style="width: 100%; height: 400px;"></div>
+    </div>
+</div>
+
+  <footer>
+      <div class="container">
+          <div class="footer-column">
+              <h3>Contact Us</h3>
+              <p>123 McLaren Street<br>City, Country 12345</p>
+              <p>Email: info@mclaren.com</p>
+              <p>Phone: +1 (234) 567-890</p>
+          </div>
+          <div class="footer-column">
+              <h3>Quick Links</h3>
+              <ul>
+                  <li><a href="index.html">Home</a></li>
+                  <li><a href="about.html">About Us</a></li>
+                  <li><a href="#">Services</a></li>
+                  <li><a href="#">Contact</a></li>
+                  <li><a href="#">Privacy Policy</a></li>
+              </ul>
+          </div>
+          <div class="footer-column">
+              <h3>Follow Us</h3>
+              <ul class="social-icons">
+                  <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111393.png" alt="Facebook"></a></li>
+                  <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"></a></li>
+                  <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Twitter"></a></li>
+                  <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111498.png" alt="YouTube"></a></li>
+              </ul>
+          </div>
+      </div>
+  </footer>
+  <script>
+    // Функция для отображения алерта
+    function showAlert(message) {
+            const alertBox = document.getElementById("alertBox");
+            alertBox.textContent = message; // Устанавливаем текст сообщения
+            alertBox.classList.add("show"); // Появление алерта
+
+            // Через 3 секунды скрываем уведомление
+            setTimeout(() => {
+                alertBox.classList.remove("show");
+            }, 3000);
+        }
+
+        // Функция для обработки отправки заявки
+        function sendRequest(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение формы
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+
+            // Показываем алерт с сообщением
+            showAlert("Заявка отправлена! Ваши данные:\nИмя: " + name + "\nEmail: " + email);
+        }
+</script>
+  <script type="text/javascript">
+    
+    ymaps.ready(init);
+ 
+    function init() {
+        // Создание карты
+        var myMap = new ymaps.Map("map", {
+            center: [55.76, 37.64], // Центр карты (координаты Москвы)
+            zoom: 10
+        });
+ 
+        // Массив с координатами автосалонов
+        var salons = [
+            [55.7558, 37.6176], // Примерные координаты автосалона 1
+            [55.7550, 37.6170], // Примерные координаты автосалона 2
+            [55.7580, 37.6200]  // Примерные координаты автосалона 3
+        ];
+ 
+        // Добавление маркеров на карту
+        salons.forEach(function(coords) {
+            var placemark = new ymaps.Placemark(coords, {
+                hintContent: 'Автосалон',
+                balloonContent: 'Здесь находится автосалон'
+            });
+            myMap.geoObjects.add(placemark);
+        });
+    }
+    
+ </script>
+</body>
+</html>

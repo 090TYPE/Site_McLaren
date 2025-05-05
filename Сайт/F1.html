@@ -14,13 +14,11 @@
                 <ul>
                     <li><a href="AllCars.html">All cars</a></li>
                     <li><a href="F1.html">F1</a></li>
+                    <li><a href="about.html">About us</a></li>
                 </ul>
             </nav>
-            <div class="search-bar">
-                <input type="text" placeholder="Поиск...">
-            </div>
-            <div class="cart"><a href="`"><img class="imgprof" src="free-icon-shopping-cart-711897.png" alt=""></a></div>
-            <div class="user-profile"><a href="`"><img class="imgprof" src="free-icon-profile-3106773.png" alt=""></a></div>
+            <div class="cart"><a href="#"><img class="imgprof" src="free-icon-shopping-cart-711897.png" alt=""></a></div>
+            <div class="user-profile"><a href="#" id="openLoginBtn"><img class="imgprof" src="free-icon-profile-3106773.png" alt=""></a></div>
         </div>
     </header>
     <div class="f1-section">
@@ -123,173 +121,371 @@
             </div>
         </div>
     </footer>
-    <div id="orderModal" class="modal">
+    
+    <!-- Модальное окно профиля (в виде формы) -->
+    <div id="userProfile">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Оформление заказа</h2>
-            <form id="orderForm">
-                <label for="fullName">Полное имя:</label>
-                <input type="text" id="fullName" name="fullName" required>
-                <label for="address">Адрес:</label>
-                <input type="text" id="address" name="address" required>
-                <label for="phone">Телефон:</label>
-                <input type="tel" id="phone" name="phone" required>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-                <button type="submit">Оформить</button>
+            <h2>Ваш профиль</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="userNameDisplay">Логин:</label>
+                    <input type="text" id="userNameDisplay" >
+                </div>
+                <div>
+                    <label for="userFirstNameDisplay">Имя:</label>
+                    <input type="text" id="userFirstNameDisplay" />
+                </div>
+                <div>   
+                    <label for="userLastNameDisplay">Фамилия:</label>
+                    <input type="text" id="userLastNameDisplay" />
+                </div>
+                <div class="form-group">
+                    <label for="userEmailDisplay">Email:</label>
+                    <input id="userEmailDisplay" type="email" />
+                </div>
+                <div class="form-group">
+                    <label for="profilePhone">Телефон:</label>
+                    <input id="userPhoneNumberDisplay" type="text" />
+                </div>
+                <div class="form-group">
+                    <label for="userAdressDisplay">Адресс:</label>
+                    <input id="userAddressDisplay" type="text" />
+                </div>
+                <div class="form-group">
+                    <label for="profilePassword">Новый пароль:</label>
+                    <input type="password" id="userPasswordDisplay" >
+                </div>
+                <button type="submit" id="saveProfileBtn">Сохранить изменения</button>
             </form>
+            <button id="logoutBtn">Выйти</button>
         </div>
     </div>
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Авторизация</h2>
-            <form id="loginForm">
-                <label for="username">Имя пользователя:</label>
-                <input type="text" id="username" name="username" pattern="[A-Za-z0-9]+" title="Только английские буквы и цифры" required>
-                <label for="password">Пароль:</label>
-                <input type="password" id="password" name="password" pattern="[A-Za-z0-9]+" title="Только английские буквы и цифры" required>
-                <button type="submit">Войти</button>
-            </form>
-            <button id="registerBtn">Зарегистрироваться</button>
-        </div>
-    </div>
-    <div id="registerModal" class="modal">
+    <!-- Модальное окно регистрации -->
+    <div id="registerModal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Регистрация</h2>
             <form id="registerForm">
-                <label for="regUsername">Имя пользователя:</label>
-                <input type="text" id="regUsername" name="regUsername" pattern="[A-Za-z0-9]+" title="Только английские буквы и цифры" required>
-                <label for="regPassword">Пароль:</label>
-                <input type="password" id="regPassword" name="regPassword" pattern="[A-Za-z0-9]+" title="Только английские буквы и цифры" required>
-                <label for="regEmail">Email:</label>
-                <input type="email" id="regEmail" name="regEmail" required>
+                <div class="form-group">
+                    <label for="regUsername">Логин:</label>
+                    <input type="text" id="regUsername" name="regUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Пароль:</label>
+                    <input type="password" id="regPassword" name="regPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="regFirstName">Имя:</label>
+                    <input type="text" id="regFirstName" name="regFirstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="regLastName">Фамилия:</label>
+                    <input type="text" id="regLastName" name="regLastName" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPhone">Телефон:</label>
+                    <input type="text" id="regPhone" name="regPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" name="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="regAddress">Адрес:</label>
+                    <input type="text" id="regAddress" name="regAddress" required>
+                </div>
                 <button type="submit">Зарегистрироваться</button>
+                <div class="forgot-password">
+                    <a href="#" id="openLoginLink">Уже есть аккаунт?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Модальное окно авторизации -->
+    <div id="loginModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Авторизация</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Логин:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Войти</button>
+                <div class="forgot-password">
+                    <a href="#" id="openRegisterLink">Нет аккаунта?</a>
+                </div>
             </form>
         </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
-            var loginModal = document.getElementById("loginModal");
-            var registerModal = document.getElementById("registerModal");
-            var orderModal = document.getElementById("orderModal");
-            var userProfileIcon = document.querySelector(".user-profile a");
-            var closeButtons = document.getElementsByClassName("close");
-            var loginForm = document.getElementById("loginForm");
-            var registerForm = document.getElementById("registerForm");
-            var orderForm = document.getElementById("orderForm");
-            var registerBtn = document.getElementById("registerBtn");
-            var notification = document.getElementById("notification");
-
-            var buyButtons = document.querySelectorAll(".btn");
-        
-            userProfileIcon.onclick = function(event) {
-                event.preventDefault();
-                loginModal.style.display = "block";
-            }
-        
-            for (var i = 0; i < closeButtons.length; i++) {
-                closeButtons[i].onclick = function() {
-                    loginModal.style.display = "none";
-                    registerModal.style.display = "none";
-                    orderModal.style.display = "none";
-                }
-            }
-        
-            window.onclick = function(event) {
-                if (event.target == loginModal) {
-                    loginModal.style.display = "none";
-                } else if (event.target == registerModal) {
-                    registerModal.style.display = "none";
-                } else if (event.target == orderModal) {
-                    orderModal.style.display = "none";
-                }
-            }
-        
-            loginForm.onsubmit = async function(event) {
-    event.preventDefault();
-    if (loginForm.checkValidity()) {
-        const username = document.getElementById("username").value.trim();
-        const password = document.getElementById("password").value.trim();
-
-        try {
-            const response = await fetch('http://localhost:3000/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, password })
-            });
-
-            if (!response.ok) {
-                throw new Error('Ошибка сети или сервера');
-            }
-
-            const data = await response.json();
-
-            if (data.success) {
-                loginModal.style.display = "none";
-                showNotification("Успешный вход!");
-
-                // Переход в зависимости от роли
-                if (data.role === "admin") {
-                    window.location.href = "adminpanel.html";
-                } else if (data.role === "user") {
-                    window.location.href = "profile.html";
-                }
-            } else {
-                showNotification("Неверное имя пользователя или пароль!");
-            }
-        } catch (error) {
-            console.error('Ошибка при входе:', error);
-            showNotification("Ошибка сервера при попытке входа!");
-        }
-    } else {
-        loginForm.reportValidity();
-    }
-}
-        
-            registerForm.onsubmit = function(event) {
-                event.preventDefault();
-                if (registerForm.checkValidity()) {
-                    registerModal.style.display = "none";
-                    showNotification("Успешная регистрация!");
-                } else {
-                    registerForm.reportValidity();
-                }
-            }
-        
-            registerBtn.onclick = function() {
-                loginModal.style.display = "none";
-                registerModal.style.display = "block";
-            }
-
-            for (var i = 0; i < buyButtons.length; i++) {
-                buyButtons[i].onclick = function() {
-                    orderModal.style.display = "block";
-                }
-            }
-
-            orderForm.onsubmit = function(event) {
-                event.preventDefault();
-                if (orderForm.checkValidity()) {
-                    orderModal.style.display = "none";
-                    showNotification("Заказ оформлен!");
-                } else {
-                    orderForm.reportValidity();
-                }
-            }
-
-            function showNotification(message) {
-                notification.textContent = message;
-                notification.style.display = "block";
-                setTimeout(() => {
-                    notification.style.display = "none";
-                }, 3000); // Скрыть через 3 секунды
-            }
-        });
-    </script>
+     const loginModal = document.getElementById("loginModal");
+     const openLoginBtn = document.getElementById("openLoginBtn");
+     const closeButtons = document.getElementsByClassName("close");
+     const loginForm = document.getElementById("loginForm");
+     const userProfile = document.getElementById("userProfile");
+     const logoutBtn = document.getElementById("logoutBtn");
+ 
+     // Проверка сессии при загрузке страницы
+     //console.log("Проверка сессии при загрузке страницы...");
+     //checkSession();
+ 
+     openLoginBtn.addEventListener("click", function (event) {
+         event.preventDefault();
+         console.log("Кнопка входа нажата.");
+         checkSession();
+     });
+ 
+     for (let i = 0; i < closeButtons.length; i++) {
+         closeButtons[i].onclick = function () {
+             console.log("Закрытие окна...");
+             loginModal.style.display = "none";
+             userProfile.style.display = "none";
+         };
+     }
+ 
+     window.onclick = function (event) {
+         if (event.target === loginModal) {
+             console.log("Нажали на модальное окно...");
+             loginModal.style.display = "none";
+             userProfile.style.display = "none";
+         }
+     };
+ 
+     loginForm.onsubmit = async function (event) {
+     event.preventDefault();
+     console.log("Попытка авторизации...");
+     const username = document.getElementById("username").value.trim();
+     const password = document.getElementById("password").value.trim();
+ 
+     const response = await fetch('http://localhost:3000/api/login', {
+         method: 'POST',
+         credentials: 'include', // 🔑 Критично для куки!
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ username, password })
+     });
+ 
+     const data = await response.json();
+     console.log("Ответ от сервера:", data);
+ 
+     if (data.success) {
+         loginModal.style.display = "none";  // Закрыть окно авторизации
+         userProfile.style.display = "block";  // Показать профиль
+         console.log("Данные пользователя:", data);
+         fillProfileForm(data.user);  // Заполнить форму данными
+ 
+         // Сохраняем данные пользователя в localStorage
+         localStorage.setItem("loggedIn", "true");
+         localStorage.setItem("user", JSON.stringify(data.user));
+         console.log(localStorage);
+ 
+         // Если это сотрудник, перенаправляем на админ-панель
+         if (data.redirectToAdminPanel) {
+             // редирект на админ панель
+             window.location.href = "adminPanel.html";
+         } 
+     } else {
+         alert('Ошибка при авторизации');
+     }
+ };
+ 
+     logoutBtn.onclick = async function () {
+         console.log("Выход из аккаунта...");
+         await fetch('http://localhost:3000/api/logout', {
+             method: 'POST',
+             credentials: 'include' // Отправка куки с запросом
+         });
+ 
+         localStorage.setItem("loggedIn", "false");
+         localStorage.removeItem("user");
+ 
+         userProfile.style.display = "none";  // Скрыть профиль
+         loginModal.style.display = "block";  // Показать окно авторизации
+         alert("Вы вышли из аккаунта");
+     };
+ 
+     document.getElementById('saveProfileBtn').onclick = async (e) => {
+     e.preventDefault();
+     console.log("Local:",localStorage);
+     const userStr = localStorage.getItem('user');
+     if (!userStr) return alert("Ошибка: пользователь не найден");
+ 
+     const user = JSON.parse(userStr);
+     const uid = user.CustomerID;  // Получаем ID пользователя из localStorage
+     console.log("UID",uid);
+     const firstName = document.getElementById("userFirstNameDisplay").value;
+     const lastName = document.getElementById("userLastNameDisplay").value;
+     const username = document.getElementById("userNameDisplay").value;
+     const password = document.getElementById("userPasswordDisplay").value;
+     const phoneNumber = document.getElementById("userPhoneNumberDisplay").value;
+     const email = document.getElementById("userEmailDisplay").value;
+     const address = document.getElementById("userAddressDisplay").value;
+         
+     // Формируем объект данных для отправки
+     const userData = {
+         CustomerID: uid,  // ID пользователя из localStorage
+         FirstName: firstName,
+         LastName: lastName,
+         UserName: username,
+         PhoneNumber: phoneNumber,
+         Email: email,
+         Address: address
+     };
+ 
+     // Если пароль не пустой, добавляем его в данные
+     if (password.trim() !== "") {
+         userData.Password = password;
+     }
+ 
+     try {
+         
+         // Отправляем запрос на сервер для обновления данных
+         const response = await fetch('http://localhost:3000/api/updateProfile', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify(userData)
+         });
+ 
+         const result = await response.json();
+ 
+         if (result.success) {
+             alert("Профиль обновлён!");
+             // Обновляем данные в localStorage
+             const newUserData = { ...user, ...userData };
+             localStorage.setItem("user", JSON.stringify(newUserData));
+             fillProfileForm(newUserData);  // Заполняем форму новыми данными
+         } else {
+             alert("Ошибка: " + result.message);
+         }
+     } catch (error) {
+         console.error("Ошибка при обновлении профиля:", error);
+         alert("Произошла ошибка при сохранении данных.");
+     }
+ };
+ 
+ 
+     async function checkSession() {
+         console.log("Проверка сессии ...");
+ 
+         // Проверка в localStorage, если пользователь уже авторизован
+         const loggedIn = localStorage.getItem("loggedIn");
+         const user = localStorage.getItem("user");
+ 
+         if (loggedIn === "true" && user) {
+             console.log("✅ Пользователь уже авторизован:", JSON.parse(user));
+             userProfile.style.display = "block";  // Показать профиль
+             loginModal.style.display = "none";  // Скрыть окно авторизации
+             fillProfileForm(JSON.parse(user));  // Заполнить форму данными пользователя
+         } else {
+             console.log("🔒 Пользователь не авторизован");
+             loginModal.style.display = "block";  // Показать окно авторизации
+             userProfile.style.display = "none";  // Скрыть профиль
+         }
+     }
+ 
+     function fillProfileForm(user) {
+     if (!user) {
+         console.error("Нет данных пользователя для заполнения формы.");
+         return;
+     }
+ 
+     document.getElementById('userNameDisplay').value = user.UserName || '';
+     document.getElementById('userFirstNameDisplay').value = user.FirstName || '';
+     document.getElementById('userLastNameDisplay').value = user.LastName || '';
+     document.getElementById('userEmailDisplay').value = user.Email || '';
+     document.getElementById('userPhoneNumberDisplay').value = user.PhoneNumber || '';
+     document.getElementById('userAddressDisplay').value = user.Address || '';
+     document.getElementById('userPasswordDisplay').value = user.Password || '';
+ }
+ 
+ const registerModal = document.getElementById("registerModal");
+ const openRegisterLink = document.getElementById("openRegisterLink");
+ 
+ openRegisterLink.addEventListener("click", function (event) {
+     event.preventDefault();
+     loginModal.style.display = "none";
+     registerModal.style.display = "block";
+ });
+ 
+ document.querySelectorAll(".close").forEach(btn => {
+     btn.addEventListener("click", () => {
+         loginModal.style.display = "none";
+         userProfile.style.display = "none";
+         registerModal.style.display = "none";
+     });
+ });
+ 
+ window.onclick = function (event) {
+     if (event.target === registerModal) {
+         registerModal.style.display = "none";
+     }
+ };
+ 
+ // Обработка отправки формы регистрации
+ document.getElementById('registerForm').addEventListener('submit', async function(event) {
+       event.preventDefault();
+ 
+       const username = document.getElementById('regUsername').value.trim();
+         const password = document.getElementById('regPassword').value.trim();
+         const firstName = document.getElementById('regFirstName').value.trim();
+         const lastName = document.getElementById('regLastName').value.trim();
+         const phone = document.getElementById('regPhone').value.trim();
+         const email = document.getElementById('regEmail').value.trim();
+         const address = document.getElementById('regAddress').value.trim();
+ 
+       // Проверка логина на сервере
+       const checkResponse = await fetch('http://localhost:3000/api/check-username', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ username })
+       });
+ 
+       const checkData = await checkResponse.json();
+ 
+       if (checkData.exists) {
+         alert('Пользователь с таким логином уже существует.');
+         return;
+       }
+ 
+       // Если логин свободен, отправляем данные на регистрацию
+       const response = await fetch('http://localhost:3000/api/register', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+           username,
+           password,
+           firstName,
+           lastName,
+           phone,
+           email,
+           address
+         })
+       });
+ 
+       const result = await response.json();
+ 
+       if (result.success) {
+         alert('Регистрация прошла успешно!');
+       } else {
+         alert('Ошибка при регистрации: ' + result.message);
+       }
+     });
+ 
+ document.getElementById('openLoginLink').addEventListener('click', function (e) {
+     e.preventDefault(); // отмена перехода по ссылке
+     const loginModal = document.getElementById('loginModal');
+     if (loginModal) {
+       loginModal.style.display = 'block';
+     }
+   });
+ });
+     </script>
 </body>
 <div id="notification" class="notification"></div>
 </html>
