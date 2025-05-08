@@ -457,4 +457,29 @@ app.post('/api/createSale', async (req, res) => {
     res.status(500).json({ success: false, message: 'Ошибка сервера при добавлении продажи.' });
   }
 });
+// Получение заказов текущего пользователя
+app.post('/api/getUserOrders', async (req, res) => {
+  const { customerId } = req.body;
 
+  if (!customerId) {
+    return res.status(400).json({ success: false, message: "Не передан ID покупателя." });
+  }
+
+  try {
+    const pool = await mssql.connect(sqlConfig);
+    const result = await pool.request()
+      .input('CustomerID', mssql.Int, customerId)
+      .query(`
+        SELECT Sales.SaleID, Cars.Model, Sales.SalePrice, Sales.SaleDate
+        FROM Sales
+        JOIN Cars ON Sales.CarID = Cars.CarID
+        WHERE Sales.CustomerID = @CustomerID
+        ORDER BY Sales.SaleDate DESC
+      `);
+
+    res.json({ success: true, orders: result.recordset });
+  } catch (error) {
+    console.error("❌ Ошибка при получении заказов:", error);
+    res.status(500).json({ success: false, message: "Ошибка сервера." });
+  }
+});
