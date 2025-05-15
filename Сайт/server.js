@@ -63,6 +63,7 @@ app.get('/api/cars', async (req, res) => {
 
     const cars = result.recordset.map(car => ({
       CarID: car.CarID,
+      Brand: car.Brand,
       Model: car.Model,
       Year: car.Year,
       Color: car.Color,

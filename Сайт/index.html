@@ -10,16 +10,16 @@
 <body>
     <header>
         <div class="container">
-            <div class="logo"><a href="index.html">McLaren</a></div>
+          <div class="logo"><a href="index.html">ЦИФРА ОДИН</a></div>
             <nav>
                 <ul>
-                    <li><a href="AllCars.html">All cars</a></li>
-                    <li><a href="F1.html">F1</a></li>
-                    <li><a href="about.html">About us</a></li>
+                    <li><a href="AllCars.html">Все машины</a></li>
+                    <li><a href="Contacs.html">Контакты</a></li>
+                    <li><a href="about.html">О нас</a></li>
+                    <li><a href="#" id="openLoginBtn">Профиль</a></li>
+                    <li><a href="#" id="cartBtn">Заказы</a></li>
                 </ul>
             </nav>
-            <div class="cart"><a href="#"><img class="imgprof" src="free-icon-shopping-cart-711897.png" alt=""></a></div>
-            <div class="user-profile"><a href="#" id="openLoginBtn"><img class="imgprof" src="free-icon-profile-3106773.png" alt=""></a></div>
         </div>
     </header>
     <div class="featured-section">
@@ -131,7 +131,15 @@
             </form>
         </div>
     </div>
-
+    <div id="ordersModal" class="ordersModal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Мои заказы</h2>
+          <div id="ordersList">
+            <!-- Сюда будет добавляться список заказов -->
+          </div>
+        </div>
+      </div>
     <footer>
         <div class="container">
             <div class="footer-column">
@@ -423,6 +431,58 @@ document.getElementById('openLoginLink').addEventListener('click', function (e) 
       loginModal.style.display = 'block';
     }
   });
+  document.getElementById('cartBtn').addEventListener('click', async () => {
+  const userStr = localStorage.getItem('user');
+  console.log("Клик по корзине");
+  if (!userStr) {
+    alert("⚠️ Пожалуйста, войдите в аккаунт.");
+    return;
+  }
+
+  const user = JSON.parse(userStr);
+  const customerId = user.CustomerID;
+
+  try {
+    const response = await fetch('http://localhost:3000/api/getUserOrders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ customerId })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      const ordersList = document.getElementById('ordersList');
+      ordersList.innerHTML = '';
+
+      if (result.orders.length === 0) {
+        ordersList.innerHTML = '<p>📭 У вас пока нет заказов.</p>';
+      } else {
+        result.orders.forEach(order => {
+          const div = document.createElement('div');
+          div.classList.add('order-item');
+          div.innerHTML = `
+            <hr>
+            <p><strong>Модель:</strong> ${order.Model}</p>
+            <p><strong>Цена:</strong> ${order.SalePrice} ₽</p>
+            <p><strong>Дата:</strong> ${new Date(order.SaleDate).toLocaleString()}</p>
+          `;
+          ordersList.appendChild(div);
+        });
+      }
+
+      ordersModal.style.display = "flex";
+    } else {
+      alert("❌ Ошибка: " + result.message);
+    }
+  } catch (error) {
+    console.error('Ошибка при получении заказов:', error);
+    alert('❌ Не удалось получить список заказов.');
+  }
+});
+document.querySelector("#ordersModal .close").onclick = () => {
+  document.getElementById("ordersModal").style.display = "none";
+};
 });
     </script>
 </body>

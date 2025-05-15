@@ -5,26 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>McLaren Online Store</title>
     <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo"><a href="index.html">McLaren</a></div>
-            <nav>
-                <ul>
-                    <li><a href="AllCars.html">All cars</a></li>
-                    <li><a href="F1.html">F1</a></li>
-                    <li><a href="about.html">About us</a></li>
-                </ul>
-            </nav>
-            <div class="cart" id="cartBtn"><a href="#"><img class="imgprof" src="free-icon-shopping-cart-711897.png" alt=""></a></div>
-            <div class="user-profile"><a href="#" id="openLoginBtn"><img class="imgprof" src="free-icon-profile-3106773.png" alt=""></a></div>
-        </div>
-    </header>
+  <header>
+    <div class="container">
+      <div class="logo"><a href="index.html">ЦИФРА ОДИН</a></div>
+        <nav>
+            <ul>
+                <li><a href="AllCars.html">Все машины</a></li>
+                <li><a href="Contacs.html">Контакты</a></li>
+                <li><a href="about.html">О нас</a></li>
+                <li><a href="#" id="openLoginBtn">Профиль</a></li>
+                <li><a href="#" id="cartBtn">Заказы</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
     
     <div class="product-section">
         <div class="container">
             <h2>All cars</h2>
+            <div class="sort-controls">
+              <label for="sortSelect">Сортировка:</label>
+              <select id="sortSelect">
+                  <option value="default">По умолчанию</option>
+                  <option value="price-asc">Цена: по возрастанию</option>
+                  <option value="price-desc">Цена: по убыванию</option>
+                  <option value="name-asc">Название: A-Z</option>
+                  <option value="name-desc">Название: Z-A</option>
+                  <option value="year-asc">Год: по возрастанию</option>
+                  <option value="year-desc">Год: по убыванию</option>
+              </select>
+          </div>
             <div class="product-grid" id="product-grid">
                 <!-- Динамически добавленные карточки будут тут -->
             </div>
@@ -172,6 +185,7 @@
   </div>
     <script>
  document.addEventListener('DOMContentLoaded', (event) => {
+     let loadedCars = [];
      const loginModal = document.getElementById("loginModal");
      const openLoginBtn = document.getElementById("openLoginBtn");
      const closeButtons = document.getElementsByClassName("close");
@@ -179,7 +193,8 @@
      const userProfile = document.getElementById("userProfile");
      const logoutBtn = document.getElementById("logoutBtn");
      const ordersModal = document.getElementById('ordersModal');
-     const closeOrdersBtn = document.querySelector('.close-orders');
+     const closeOrdersBtn = document.querySelector('.close-orders')
+     const ordersCloseBtn = document.querySelector('#ordersModal .close');;
      // Проверка сессии при загрузке страницы
      //console.log("Проверка сессии при загрузке страницы...");
      //checkSession();
@@ -433,80 +448,144 @@
      }
    });
  });
-    fetch('http://localhost:3000/api/cars')
-      .then(response => response.json())
-      .then(data => {
-        const grid = document.getElementById('product-grid');
-        data.forEach(car => {
-          const card = document.createElement('div');
-          card.className = 'product-card';
-
-          const imageUrl = car.Image
-            ? 'data:image/png;base64,' + car.Image
-            : 'https://via.placeholder.com/300x180?text=No+Image';
-
-          card.innerHTML = `
-            <img src="${imageUrl}" alt="${car.Model}">
-            <h3>${car.Model}</h3>
-            <p>Год: ${car.Year}</p>
-            <p>Цвет: ${car.Color}</p>
-            <p>Двигатель: ${car.EngineType}</p>
-            <p>Трансмиссия: ${car.Transmission}</p>
-            <p><strong>Цена: ${car.Price.toFixed(2)} $</strong></p>
-            <button class="buy-btn" data-car-id="${car.CarID}" data-sale-price="${car.Price}">Купить</button>
-          `;
-          grid.appendChild(card);
-        });
-        grid.addEventListener('click', async (event) => {
-  if (event.target.classList.contains('buy-btn')) {
-    const button = event.target;
-    const carId = parseInt(button.dataset.carId);
-    const salePrice = parseFloat(button.dataset.salePrice);
-    const userStr = localStorage.getItem('user');
-    if (!userStr) {
-      alert("⚠️ Войдите в аккаунт для покупки!");
-      return;
-    }
-    const user = JSON.parse(userStr);
-    const uid = user.CustomerID;  // Получаем ID пользователя из localStorage
-    const customerId = uid; // <-- Заменить на актуального покупателя (например, из сессии)
-    const employeeId = 0;
-    try {
-      const response = await fetch('http://localhost:3000/api/createSale', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          customerId,
-          carId,
-          salePrice,
-          employeeId
-        })
-      });
-
-      // Проверка статуса ответа
-      if (!response.ok) {
-        throw new Error(`Ошибка сервера: ${response.statusText}`);
-      }
-
-      const result = await response.json(); // Здесь мы ожидаем JSON
-
-      console.log(result); // Для отладки
-
-      if (result.success) {
-        alert('✅ Продажа успешно оформлена!');
-        location.reload();
-      } else {
-        alert('❌ Ошибка: ' + result.message);
-      }
-    } catch (error) {
-      console.error('Ошибка при запросе:', error);
-      alert('❌ Ошибка при отправке данных на сервер.');
-    }
-  }
-});
-document.getElementById('cartBtn').addEventListener('click', async () => {
+ 
+ // Функция для сортировки автомобилей
+ function sortCars(cars, sortType) {
+     switch(sortType) {
+         case 'price-asc':
+             return [...cars].sort((a, b) => a.Price - b.Price);
+         case 'price-desc':
+             return [...cars].sort((a, b) => b.Price - a.Price);
+         case 'name-asc':
+             return [...cars].sort((a, b) => {
+                 const nameA = `${a.Brand} ${a.Model}`.toLowerCase();
+                 const nameB = `${b.Brand} ${b.Model}`.toLowerCase();
+                 return nameA.localeCompare(nameB);
+             });
+         case 'name-desc':
+             return [...cars].sort((a, b) => {
+                 const nameA = `${a.Brand} ${a.Model}`.toLowerCase();
+                 const nameB = `${b.Brand} ${b.Model}`.toLowerCase();
+                 return nameB.localeCompare(nameA);
+             });
+         case 'year-asc':
+             return [...cars].sort((a, b) => a.Year - b.Year);
+         case 'year-desc':
+             return [...cars].sort((a, b) => b.Year - a.Year);
+         default:
+             return cars;
+     }
+ }
+ 
+ // Функция для отображения автомобилей
+ function renderCars(cars) {
+     const grid = document.getElementById('product-grid');
+     grid.innerHTML = '';
+     
+     cars.forEach(car => {
+         const card = document.createElement('div');
+         card.className = 'product-card';
+ 
+         const imageUrl = car.Image
+             ? 'data:image/png;base64,' + car.Image
+             : 'https://via.placeholder.com/300x180?text=No+Image';
+ 
+         card.innerHTML = `
+             <img src="${imageUrl}" alt="${car.Model}">
+             <h3>${car.Brand}</h3>
+             <h3>${car.Model}</h3>
+             <p>Год: ${car.Year}</p>
+             <p>Цвет: ${car.Color}</p>
+             <p>Двигатель: ${car.EngineType}</p>
+             <p>Трансмиссия: ${car.Transmission}</p>
+             <p><strong>Цена: ${car.Price.toFixed(2)} $</strong></p>
+             <button class="buy-btn" data-car-id="${car.CarID}" data-sale-price="${car.Price}">Купить</button>
+         `;
+         grid.appendChild(card);
+     });
+     
+     // Добавляем обработчики событий для кнопок покупки
+     grid.addEventListener('click', async (event) => {
+         if (event.target.classList.contains('buy-btn')) {
+             const button = event.target;
+             const carId = parseInt(button.dataset.carId);
+             const salePrice = parseFloat(button.dataset.salePrice);
+             const userStr = localStorage.getItem('user');
+             if (!userStr) {
+                 alert("⚠️ Войдите в аккаунт для покупки!");
+                 return;
+             }
+             const user = JSON.parse(userStr);
+             const uid = user.CustomerID;
+             const customerId = uid;
+             const employeeId = 0;
+             try {
+                 const response = await fetch('http://localhost:3000/api/createSale', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json'
+                     },
+                     body: JSON.stringify({
+                         customerId,
+                         carId,
+                         salePrice,
+                         employeeId
+                     })
+                 });
+ 
+                 if (!response.ok) {
+                     throw new Error(`Ошибка сервера: ${response.statusText}`);
+                 }
+ 
+                 const result = await response.json();
+ 
+                 console.log(result);
+ 
+                 if (result.success) {
+                     alert('✅ Продажа успешно оформлена!');
+                     location.reload();
+                 } else {
+                  alert('❌ Ошибка: ' + result.message, 'error');
+                 }
+             } catch (error) {
+                 console.error('Ошибка при запросе:', error);
+                 alert('❌ Ошибка при отправке данных на сервер.', 'error');
+             }
+         }
+     });
+ }
+ 
+ // Функция для показа уведомлений
+ function showNotification(message, type = 'success') {
+     const notification = document.getElementById('notification');
+     notification.textContent = message;
+     notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
+     notification.style.display = 'block';
+     
+     setTimeout(() => {
+         notification.style.display = 'none';
+     }, 6000);
+ }
+ 
+ // Загрузка автомобилей и настройка сортировки
+ fetch('http://localhost:3000/api/cars')
+     .then(response => response.json())
+     .then(data => {
+         loadedCars = data;
+         renderCars(loadedCars);
+         
+         // Обработчик изменения сортировки
+         document.getElementById('sortSelect').addEventListener('change', (e) => {
+             const sortedCars = sortCars(loadedCars, e.target.value);
+             renderCars(sortedCars);
+         });
+     })
+     .catch(error => {
+         console.error('Ошибка при загрузке автомобилей:', error);
+         showNotification('❌ Не удалось загрузить список автомобилей', 'error');
+     });
+ 
+     document.getElementById('cartBtn').addEventListener('click', async () => {
   const userStr = localStorage.getItem('user');
   console.log("Клик по корзине");
   if (!userStr) {
@@ -555,9 +634,19 @@ document.getElementById('cartBtn').addEventListener('click', async () => {
     alert('❌ Не удалось получить список заказов.');
   }
 });
-document.querySelector("#ordersModal .close").onclick = () => {
-  document.getElementById("ordersModal").style.display = "none";
-};
+    const ordersModal = document.getElementById('ordersModal');
+     const closeOrdersBtn = document.querySelector('.close-orders')
+     const ordersCloseBtn = document.querySelector('#ordersModal .close');;
+// Обработчик закрытия модального окна заказов
+ordersCloseBtn.addEventListener('click', () => {
+    ordersModal.style.display = "none";
+});
+
+// Закрытие при клике вне модального окна
+window.addEventListener('click', (event) => {
+    if (event.target === ordersModal) {
+        ordersModal.style.display = "none";
+    }
 });
 
   </script>
