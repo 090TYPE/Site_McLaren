@@ -25,7 +25,7 @@
     
     <div class="product-section">
         <div class="container">
-            <h2>All cars</h2>
+            <h2>Все машины</h2>
             <div class="sort-controls">
               <label for="sortSelect">Сортировка:</label>
               <select id="sortSelect">
@@ -477,83 +477,84 @@
      }
  }
  
- // Функция для отображения автомобилей
- function renderCars(cars) {
-     const grid = document.getElementById('product-grid');
-     grid.innerHTML = '';
-     
-     cars.forEach(car => {
-         const card = document.createElement('div');
-         card.className = 'product-card';
- 
-         const imageUrl = car.Image
-             ? 'data:image/png;base64,' + car.Image
-             : 'https://via.placeholder.com/300x180?text=No+Image';
- 
-         card.innerHTML = `
-             <img src="${imageUrl}" alt="${car.Model}">
-             <h3>${car.Brand}</h3>
-             <h3>${car.Model}</h3>
-             <p>Год: ${car.Year}</p>
-             <p>Цвет: ${car.Color}</p>
-             <p>Двигатель: ${car.EngineType}</p>
-             <p>Трансмиссия: ${car.Transmission}</p>
-             <p><strong>Цена: ${car.Price.toFixed(2)} $</strong></p>
-             <button class="buy-btn" data-car-id="${car.CarID}" data-sale-price="${car.Price}">Купить</button>
-         `;
-         grid.appendChild(card);
-     });
-     
-     // Добавляем обработчики событий для кнопок покупки
-     grid.addEventListener('click', async (event) => {
-         if (event.target.classList.contains('buy-btn')) {
-             const button = event.target;
-             const carId = parseInt(button.dataset.carId);
-             const salePrice = parseFloat(button.dataset.salePrice);
-             const userStr = localStorage.getItem('user');
-             if (!userStr) {
-                 alert("⚠️ Войдите в аккаунт для покупки!");
-                 return;
-             }
-             const user = JSON.parse(userStr);
-             const uid = user.CustomerID;
-             const customerId = uid;
-             const employeeId = 0;
-             try {
-                 const response = await fetch('http://localhost:3000/api/createSale', {
-                     method: 'POST',
-                     headers: {
-                         'Content-Type': 'application/json'
-                     },
-                     body: JSON.stringify({
-                         customerId,
-                         carId,
-                         salePrice,
-                         employeeId
-                     })
-                 });
- 
-                 if (!response.ok) {
-                     throw new Error(`Ошибка сервера: ${response.statusText}`);
-                 }
- 
-                 const result = await response.json();
- 
-                 console.log(result);
- 
-                 if (result.success) {
-                     alert('✅ Продажа успешно оформлена!');
-                     location.reload();
-                 } else {
-                  alert('❌ Ошибка: ' + result.message, 'error');
-                 }
-             } catch (error) {
-                 console.error('Ошибка при запросе:', error);
-                 alert('❌ Ошибка при отправке данных на сервер.', 'error');
-             }
-         }
-     });
- }
+ document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.getElementById('product-grid');
+
+    grid.addEventListener('click', async (event) => {
+        if (event.target.classList.contains('buy-btn')) {
+            const button = event.target;
+            const carId = parseInt(button.dataset.carId);
+            const salePrice = parseFloat(button.dataset.salePrice);
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                alert("⚠️ Войдите в аккаунт для покупки!");
+                return;
+            }
+            const user = JSON.parse(userStr);
+            const customerId = user.CustomerID;
+            const employeeId = 0;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/createSale', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        customerId,
+                        carId,
+                        salePrice,
+                        employeeId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Ошибка сервера: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Продажа успешно оформлена!');
+                    location.reload();
+                } else {
+                    alert('❌ Ошибка: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Ошибка при запросе:', error);
+                alert('❌ Ошибка при отправке данных на сервер.');
+            }
+        }
+    });
+});
+
+// 2. Оставляем renderCars только для рендеринга, без обработчиков
+function renderCars(cars) {
+    const grid = document.getElementById('product-grid');
+    grid.innerHTML = '';
+
+    cars.forEach(car => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+
+        const imageUrl = car.Image
+            ? 'data:image/png;base64,' + car.Image
+            : 'https://via.placeholder.com/300x180?text=No+Image';
+
+        card.innerHTML = `
+            <img src="${imageUrl}" alt="${car.Model}">
+            <h3>${car.Brand}</h3>
+            <h3>${car.Model}</h3>
+            <p>Год: ${car.Year}</p>
+            <p>Цвет: ${car.Color}</p>
+            <p>Двигатель: ${car.EngineType}</p>
+            <p>Трансмиссия: ${car.Transmission}</p>
+            <p><strong>Цена: ${car.Price.toFixed(2)} $</strong></p>
+            <button class="buy-btn" data-car-id="${car.CarID}" data-sale-price="${car.Price}">Заказать</button>
+        `;
+        grid.appendChild(card);
+    });
+}
  
  // Функция для показа уведомлений
  function showNotification(message, type = 'success') {
@@ -617,6 +618,7 @@
           div.classList.add('order-item');
           div.innerHTML = `
             <hr>
+            <p><strong>Бренд:</strong> ${order.Model}</p>
             <p><strong>Модель:</strong> ${order.Model}</p>
             <p><strong>Цена:</strong> ${order.SalePrice} ₽</p>
             <p><strong>Дата:</strong> ${new Date(order.SaleDate).toLocaleString()}</p>

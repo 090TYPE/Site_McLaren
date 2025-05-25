@@ -14,7 +14,6 @@
         <!-- Меню -->
         <nav>
           <button class="menu-button" onclick="togglePanel('addCarPanel')">Добавить машину</button>
-          <button class="menu-button" onclick="togglePanel('reportPanel')">Отчёт</button>
           <button class="menu-button" onclick="togglePanel('mcstore-tables-container')">База данных</button>
         </nav>
 
@@ -39,6 +38,9 @@
 
             <label for="transmission">Трансмиссия:</label>
             <input type="text" id="transmission" required><br>
+
+            <label for="brand">Бренд:</label>
+            <input type="text" id="brand" required><br>
 
             <label for="image">Изображение:</label>
             <input type="file" id="image" required><br>
@@ -111,6 +113,7 @@
     const price = document.getElementById('price').value;
     const engineType = document.getElementById('engineType').value;
     const transmission = document.getElementById('transmission').value;
+    const brand = document.getElementById('brand').value;
     const image = document.getElementById('image').files[0]; // Загружаемый файл изображения
 
     const formData = new FormData();
@@ -120,6 +123,7 @@
     formData.append('Price', price);
     formData.append('EngineType', engineType);
     formData.append('Transmission', transmission);
+    formData.append('Brand', brand)
     formData.append('Image', image);
 
     try {

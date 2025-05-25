@@ -49,7 +49,39 @@ header .search-bar {
   float: right;
   margin-right: 30px;
 }
+/* Блок "Почему ЦИФРА ОДИН?" */
+.benefits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
 
+.benefits ul li {
+    font-size: 18px;
+    margin-bottom: 15px;
+    padding-left: 30px;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.benefits ul li::before {
+    content: "✔";
+    color: #fff;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.benefits ul li:hover {
+    color: #c0c0c0;
+}
+
+/* Секция "Новинки месяца" */
+.new-arrivals p {
+    font-size: 18px;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
 header .cart,
 header .user-profile {
   float: right;
@@ -89,12 +121,21 @@ header .user-profile {
 
 .featured-section .btn  {
   background-color: #fff;
-  color: #000;
+  color: #000000;
   padding: 10px 30px;
   border-radius: 5px;
   font-size: 1.2rem;
   cursor: pointer;
 }
+.featured-section .btn  {
+  background-color: #fff;
+  color: #000000;
+  padding: 10px 30px;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
 
 .featured-section .btn:hover  {
   background-color: #000;
@@ -723,6 +764,7 @@ form button:hover {
 }
 
 #userProfile button {
+  margin-top: 5px;
   width: 100%;
   padding: 12px 15px;
   background-color: #007bff;

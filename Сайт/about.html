@@ -501,6 +501,7 @@ document.getElementById('openLoginLink').addEventListener('click', function (e) 
           div.classList.add('order-item');
           div.innerHTML = `
             <hr>
+            <p><strong>Бренд:</strong> ${order.Brand}</p>
             <p><strong>Модель:</strong> ${order.Model}</p>
             <p><strong>Цена:</strong> ${order.SalePrice} ₽</p>
             <p><strong>Дата:</strong> ${new Date(order.SaleDate).toLocaleString()}</p>
